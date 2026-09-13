@@ -1,6 +1,4 @@
 # ---- project instruction files (not for publication) ----
-# Anchored to the repo root: the instruction file sits there, while the
-# manuscript lives in manuscript/ and must NOT be caught by this.
 /Paper?_*.md
 /*_Instructions.md
 
@@ -10,6 +8,7 @@ data/derived/
 *.zip
 *.dta
 *.sav
+*.npy
 
 # ---- environments and caches ----
 .venv/
@@ -17,8 +16,6 @@ venv/
 __pycache__/
 *.py[cod]
 .ipynb_checkpoints/
-.Rproj.user/
-.Rhistory
 
 # ---- OS / editor ----
 .DS_Store
