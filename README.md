@@ -24,6 +24,19 @@ The 2026 pricing is now fixed and a retroactive restoration would not undo it,
 but it would change what the 2026 enrolment counterfactual means. Re-check the
 legislative position before submission.
 
+## Interactive calculator
+
+**https://aca-subsidy-cliff.vercel.app**
+
+Enter an age, a state and an income and see what the expiry did to your
+premium, how far you are from the 400% cliff, and what crossing it would cost.
+It runs the paper's own subsidy calculation in the browser on the CMS benchmark
+premiums; nothing typed into it is sent anywhere.
+
+Build it with `python/export_tool_data.py` then `python/build_tool.py`. The
+export prints the reference values the page must reproduce, so a drift between
+the paper and the tool shows up at build time.
+
 ## Status
 
 In progress. Benchmark premiums and the subsidy calculator are built and

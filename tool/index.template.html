@@ -1,0 +1,595 @@
+<title>The Subsidy Cliff</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;500;600;700;800&family=Roboto+Mono:wght@400;500;700&display=swap">
+
+<style>
+/* ============================================================= tokens ====
+   Steel and signal. 2025 is the cool, orderly regime; 2026 is the alarm.
+   Ground is a cold paper white with a blue cast, not warm - this is a
+   government rate filing, not a letterpress invitation.                    */
+:root{
+  --paper:#F2F4F7; --card:#FFFFFF; --card-2:#F7F9FB;
+  --ink:#0F1622; --ink-2:#465264; --ink-3:#7C8899;
+  --rule:#D7DEE7; --rule-2:#E8EDF3;
+  --y25:#2C6E9B; --y25-soft:#E4EFF6;
+  --y26:#C62828; --y26-soft:#FBE9E9;
+  --gap:#E65100;
+  --ok:#2E7D52;
+  --shadow:0 1px 2px rgba(15,22,34,.06), 0 10px 30px -16px rgba(15,22,34,.28);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --paper:#0C1119; --card:#141B26; --card-2:#1A2230;
+    --ink:#E8EDF3; --ink-2:#A7B4C4; --ink-3:#74828F;
+    --rule:#27313F; --rule-2:#1D2531;
+    --y25:#6FB4DC; --y25-soft:#16303F;
+    --y26:#F2726F; --y26-soft:#331A1A;
+    --gap:#F0913D;
+    --ok:#63C795;
+    --shadow:0 1px 2px rgba(0,0,0,.35), 0 12px 34px -18px rgba(0,0,0,.8);
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#0C1119; --card:#141B26; --card-2:#1A2230;
+  --ink:#E8EDF3; --ink-2:#A7B4C4; --ink-3:#74828F;
+  --rule:#27313F; --rule-2:#1D2531;
+  --y25:#6FB4DC; --y25-soft:#16303F;
+  --y26:#F2726F; --y26-soft:#331A1A;
+  --gap:#F0913D;
+  --ok:#63C795;
+  --shadow:0 1px 2px rgba(0,0,0,.35), 0 12px 34px -18px rgba(0,0,0,.8);
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0; background:var(--paper); color:var(--ink);
+  font-family:"Libre Franklin",-apple-system,Segoe UI,sans-serif;
+  font-size:15px; line-height:1.55; -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:960px; margin:0 auto; padding-inline:20px}
+.mono{font-family:"Roboto Mono",ui-monospace,Menlo,monospace;
+      font-variant-numeric:tabular-nums}
+h1,h2,h3{margin:0; text-wrap:balance; letter-spacing:-.02em}
+
+/* ============================================================== header === */
+header{background:var(--card); border-bottom:1px solid var(--rule)}
+.head{padding-block:30px 26px}
+.kicker{font-size:11px; font-weight:700; letter-spacing:.14em;
+        text-transform:uppercase; color:var(--y26); margin-bottom:10px}
+h1{font-size:clamp(30px,5vw,48px); font-weight:800; line-height:1.02}
+.sub{margin:12px 0 0; max-width:60ch; color:var(--ink-2); font-size:16px}
+
+/* =============================================================== ask ===== */
+.ask{background:var(--card); padding-block:0 28px}
+.sentence{font-size:clamp(19px,2.6vw,27px); font-weight:500; line-height:1.75;
+          letter-spacing:-.01em}
+.field{display:inline-block; position:relative}
+.field select,.field input{
+  font-family:"Libre Franklin",sans-serif; font-size:inherit; font-weight:700;
+  color:var(--y26); background:var(--y26-soft); border:0;
+  border-bottom:2.5px solid var(--y26); padding:1px 6px; cursor:pointer;
+  border-radius:3px 3px 0 0; -webkit-appearance:none; appearance:none;
+  text-align:center;
+}
+.field input{width:5.4ch; cursor:text; text-align:center}
+.field input.wide{width:9ch}
+.field select{padding-right:22px; background-image:
+  linear-gradient(45deg,transparent 50%,currentColor 50%),
+  linear-gradient(135deg,currentColor 50%,transparent 50%);
+  background-position:calc(100% - 12px) 0.62em, calc(100% - 7px) 0.62em;
+  background-size:5px 5px,5px 5px; background-repeat:no-repeat}
+.field select:focus,.field input:focus{outline:2px solid var(--y26);
+  outline-offset:2px}
+.hintline{margin:14px 0 0; font-size:13px; color:var(--ink-3)}
+
+/* ============================================================ verdict ==== */
+.verdict{background:var(--card); border-bottom:1px solid var(--rule);
+         padding-block:0 30px}
+.vgrid{display:grid; grid-template-columns:repeat(3,1fr); gap:1px;
+       background:var(--rule); border:1px solid var(--rule); border-radius:10px;
+       overflow:hidden; box-shadow:var(--shadow)}
+.vcell{background:var(--card); padding:18px 20px 20px}
+.vcell .k{font-size:11px; font-weight:700; letter-spacing:.1em;
+          text-transform:uppercase; color:var(--ink-3)}
+.vcell .v{font-family:"Roboto Mono",monospace; font-size:clamp(24px,4vw,36px);
+          font-weight:700; letter-spacing:-.03em; margin-top:6px; line-height:1}
+.vcell .d{font-size:12.5px; color:var(--ink-3); margin-top:7px; line-height:1.4}
+.vcell.a .v{color:var(--y25)} .vcell.b .v{color:var(--y26)}
+.vcell.c{background:var(--y26-soft)} .vcell.c .v{color:var(--gap)}
+
+.callout{margin-top:18px; padding:15px 18px; border-radius:8px;
+         background:var(--y26-soft); border-left:4px solid var(--y26);
+         font-size:15px; line-height:1.6}
+.callout.safe{background:var(--y25-soft); border-left-color:var(--y25)}
+.callout b{font-weight:700}
+
+/* ============================================================== panels === */
+main{padding-block:28px 60px; display:grid; gap:22px}
+.panel{background:var(--card); border:1px solid var(--rule); border-radius:10px;
+       box-shadow:var(--shadow); padding:20px 22px 22px}
+.panel h2{font-size:20px; font-weight:700}
+.panel .lede{margin:6px 0 0; color:var(--ink-2); font-size:14px; max-width:76ch}
+svg{display:block; max-width:100%; height:auto}
+.chartbox{margin-top:18px; overflow-x:auto}
+.axis{stroke:var(--rule); stroke-width:1}
+.grid{stroke:var(--rule-2); stroke-width:1}
+.tick{fill:var(--ink-3); font-family:"Roboto Mono",monospace; font-size:10px}
+.slab{fill:var(--ink-2); font-family:"Libre Franklin",sans-serif; font-size:11px}
+.key{display:flex; flex-wrap:wrap; gap:8px 20px; margin-top:14px; font-size:12.5px;
+     color:var(--ink-2)}
+.key i{display:inline-block; width:14px; height:3px; margin-right:7px;
+       vertical-align:3px; border-radius:2px}
+
+table{width:100%; border-collapse:collapse; margin-top:16px; font-size:13.5px}
+th,td{padding:9px 11px; text-align:right; border-bottom:1px solid var(--rule-2)}
+th:first-child,td:first-child{text-align:left}
+thead th{font-size:10.5px; text-transform:uppercase; letter-spacing:.08em;
+         color:var(--ink-3); font-weight:700; border-bottom:1.5px solid var(--rule)}
+tbody td{font-family:"Roboto Mono",monospace; font-variant-numeric:tabular-nums}
+tbody td:first-child{font-family:"Libre Franklin",sans-serif}
+tbody tr.you{background:var(--y26-soft)}
+tbody tr.you td{font-weight:700}
+
+details{margin-top:16px; border-top:1px solid var(--rule-2); padding-top:14px}
+summary{cursor:pointer; font-size:13px; font-weight:600; color:var(--ink-2);
+        list-style:none}
+summary::-webkit-details-marker{display:none}
+summary::before{content:"+ "; color:var(--y26); font-weight:800}
+details[open] summary::before{content:"– "}
+details p{font-size:13px; color:var(--ink-2); line-height:1.65; max-width:80ch}
+
+footer{border-top:1px solid var(--rule); margin-top:10px; padding-block:24px 44px;
+       font-size:12.5px; color:var(--ink-3); line-height:1.65}
+footer p{margin:0 0 9px; max-width:88ch}
+footer a{color:var(--y25)}
+.status{background:var(--card-2); border:1px solid var(--rule); border-radius:8px;
+        padding:14px 16px; font-size:13px; color:var(--ink-2); line-height:1.6}
+.status b{color:var(--ink)}
+
+@media (max-width:760px){
+  .vgrid{grid-template-columns:1fr}
+  .sentence{font-size:19px; line-height:2}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<header>
+  <div class="wrap head">
+    <p class="kicker">ACA marketplace &middot; plan years 2025 and 2026</p>
+    <h1>The subsidy cliff is back</h1>
+    <p class="sub">The enhanced premium tax credits expired on 31 December 2025.
+      Premiums rose, and above four times the poverty line the tax credit now
+      stops entirely. Enter your details to see what changed and how close you
+      are to the edge.</p>
+  </div>
+</header>
+
+<section class="ask">
+  <div class="wrap">
+    <p class="sentence">
+      I am
+      <span class="field"><input id="age" type="number" min="14" max="64" value="40"
+        inputmode="numeric" aria-label="Your age"></span>
+      years old, living in
+      <span class="field"><select id="state" aria-label="Your state"></select></span>,
+      and I expect to earn
+      <span class="field"><input id="income" class="wide" type="text" value="$40,000"
+        inputmode="numeric" aria-label="Your annual income"></span>
+      a year.
+    </p>
+    <p class="hintline" id="hintline"></p>
+  </div>
+</section>
+
+<section class="verdict">
+  <div class="wrap">
+    <div class="vgrid">
+      <div class="vcell a"><div class="k">Under 2025 rules</div>
+        <div class="v" id="v25"></div><div class="d" id="d25"></div></div>
+      <div class="vcell b"><div class="k">Under 2026 rules</div>
+        <div class="v" id="v26"></div><div class="d" id="d26"></div></div>
+      <div class="vcell c"><div class="k">Difference</div>
+        <div class="v" id="vgap"></div><div class="d" id="dgap"></div></div>
+    </div>
+    <div class="callout" id="callout"></div>
+  </div>
+</section>
+
+<main class="wrap">
+
+  <section class="panel">
+    <h2>Where you stand on the cliff</h2>
+    <p class="lede">Your annual premium for the benchmark plan, against income.
+      In 2025 the line bends but never breaks. In 2026 it falls off at four
+      times the poverty line, because above that point the tax credit stops.</p>
+    <div class="chartbox"><svg id="cliffchart" role="img"
+      aria-label="Net annual premium against income, 2025 and 2026"></svg></div>
+    <div class="key">
+      <span><i style="background:var(--y25)"></i>2025 &mdash; enhanced credits</span>
+      <span><i style="background:var(--y26)"></i>2026 &mdash; credits expired</span>
+      <span><i style="background:var(--gap);height:11px;width:11px;border-radius:50%"></i>You</span>
+    </div>
+  </section>
+
+  <section class="panel">
+    <h2>The same person, at every age</h2>
+    <p class="lede">The credit is capped as a share of income, so the cliff is
+      the whole premium above the cap &mdash; and premiums are allowed to rise
+      threefold from the youngest adult to the oldest. The cliff is
+      overwhelmingly a problem for people in their fifties and sixties.</p>
+    <table id="agetable">
+      <thead><tr><th>Age</th><th>Full premium</th><th>Just under 400%</th>
+        <th>Just over 400%</th><th>The step</th><th>Share of income</th></tr></thead>
+      <tbody></tbody>
+    </table>
+  </section>
+
+  <section class="panel">
+    <h2>How your state compares</h2>
+    <p class="lede">Benchmark premiums vary about threefold across the federal
+      marketplace, so the same policy change lands very differently depending on
+      where you live. Full premium at your age, just above the cliff.</p>
+    <div class="chartbox"><svg id="statechart" role="img"
+      aria-label="Benchmark premium by state"></svg></div>
+  </section>
+
+  <section class="panel">
+    <h2>What this is</h2>
+    <details open>
+      <summary>Read this before relying on a number</summary>
+      <p>This calculator accompanies a working paper on what the expiry of the
+        enhanced premium tax credits did to the individual-market risk pool. It
+        uses the <b>benchmark premium</b> &mdash; the second-lowest-cost silver
+        plan, which is what the tax credit is legally calculated against &mdash;
+        taken from the CMS Exchange Rate and Plan Attributes public use files for
+        plan years 2025 and 2026.</p>
+      <p><b>It shows a state median.</b> Premiums are set by rating area, and
+        within a state they vary widely; the chart shows your state's range where
+        it can. Your own plan may not be the benchmark plan, and most people do
+        not buy the benchmark. Cost-sharing reductions, which also depend on
+        income, are not modelled.</p>
+      <p><b>It covers the 31 states that use HealthCare.gov.</b> State-based
+        exchanges &mdash; California, New York, Colorado, Massachusetts and
+        others &mdash; file their own rates and are not in this data. Several of
+        them run their own subsidy programmes that cushion the change, so their
+        absence matters.</p>
+      <p><b>It is a single-person calculation.</b> A household's benchmark is
+        built from each member's rate and its poverty threshold rises with
+        household size, so a family's numbers differ.</p>
+      <p>For an authoritative estimate of what you personally will pay, use
+        HealthCare.gov or your state marketplace. Nothing here is advice.</p>
+    </details>
+  </section>
+
+  <div class="status" id="status"></div>
+</main>
+
+<footer class="wrap">
+  <p><b>Data.</b> CMS Health Insurance Exchange Public Use Files &mdash; Rate PUF
+    and Plan Attributes PUF, plan years 2025 and 2026. Applicable-percentage
+    schedules from the enhanced (ARPA/IRA) and original ACA rules; HHS poverty
+    guidelines.</p>
+  <p><b>Paper.</b> Babalola, O. D. (2026). <i>The Subsidy Cliff and the Risk
+    Pool: An Actuarial Model of Adverse Selection and Premium Stability in the
+    ACA Individual Market.</i> Working paper. Code and data:
+    <a href="https://github.com/tosin-babs/aca-risk-pool-subsidy-cliff">github.com/tosin-babs/aca-risk-pool-subsidy-cliff</a></p>
+  <p id="foot-gen"></p>
+</footer>
+
+<script id="model-data" type="application/json">__MODEL_DATA__</script>
+<script>
+"use strict";
+const D = JSON.parse(document.getElementById("model-data").textContent);
+
+const usd = n => "$" + Math.round(n).toLocaleString("en-US");
+const usd0 = n => "$" + Math.round(n).toLocaleString("en-US");
+const pct = (x, d=1) => x.toFixed(d) + "%";
+
+/* -------------------------------------------------- the subsidy schedule */
+function applicablePct(fplPct, year){
+  let lower = 0;
+  for (const [upper, start, end] of D.schedule[year]){
+    const hi = upper === null ? Infinity : upper;
+    if (fplPct <= hi){
+      if (start === null) return null;          // the cliff: no credit
+      if (!isFinite(hi) || end === start) return start;
+      return start + ((fplPct - lower) / (hi - lower)) * (end - start);
+    }
+    lower = hi;
+  }
+  return null;
+}
+const fplBase = y => D.fpl.base[y];
+const fplPctOf = (income, year) => 100 * income / fplBase(year);
+
+/* Benchmark annual premium for a state and age, by linear lookup. */
+function benchmark(stateCode, age, year){
+  const src = (stateCode && D.states[stateCode]) ? D.states[stateCode][year]
+                                                 : D.national[year];
+  if (!src) return null;
+  const i = src.age.indexOf(age);
+  if (i >= 0) return src.med[i] * 12;
+  // Ages outside the filed range fall back to the nearest filed age.
+  let best = 0, bd = Infinity;
+  src.age.forEach((a, k) => { const d = Math.abs(a - age);
+                              if (d < bd){ bd = d; best = k; } });
+  return src.med[best] * 12;
+}
+function benchmarkRange(stateCode, age, year){
+  const s = D.states[stateCode];
+  if (!s || !s[year]) return null;
+  const i = s[year].age.indexOf(age);
+  if (i < 0) return null;
+  return {lo: s[year].lo[i] * 12, hi: s[year].hi[i] * 12};
+}
+
+/* Net annual premium: the smaller of the full premium and what the schedule
+   says you contribute. Above the cliff there is no credit, so you pay it all. */
+function netPremium(income, stateCode, age, year){
+  const gross = benchmark(stateCode, age, year);
+  if (gross === null) return null;
+  const p = applicablePct(fplPctOf(income, year), year);
+  if (p === null) return {gross, net: gross, credit: 0, expected: null};
+  const expected = income * p;
+  const net = Math.min(gross, expected);
+  return {gross, net, credit: gross - net, expected};
+}
+
+/* --------------------------------------------------------------- state */
+const S = {age: 40, state: "TX", income: 40000};
+
+function parseMoney(v){
+  const n = parseFloat(String(v).replace(/[^0-9.]/g, ""));
+  return isFinite(n) ? n : 0;
+}
+
+/* --------------------------------------------------------------- charts */
+const NS = "http://www.w3.org/2000/svg";
+const el = (t, a, txt) => {
+  const e = document.createElementNS(NS, t);
+  for (const k in a) e.setAttribute(k, a[k]);
+  if (txt != null) e.textContent = txt;
+  return e;
+};
+const clear = n => { while (n.firstChild) n.removeChild(n.firstChild); };
+
+function drawCliff(){
+  const svg = document.getElementById("cliffchart");
+  clear(svg);
+  const W = 900, H = 380, ml = 62, mr = 22, mt = 20, mb = 52;
+  svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
+  svg.setAttribute("width", W); svg.setAttribute("height", H);
+  const iw = W - ml - mr, ih = H - mt - mb;
+
+  const maxIncome = Math.max(90000, S.income * 1.35);
+  const series = {};
+  let peak = 0;
+  for (const y of ["2025", "2026"]){
+    const pts = [];
+    for (let inc = 12000; inc <= maxIncome; inc += 250){
+      const r = netPremium(inc, S.state, S.age, y);
+      if (!r) continue;
+      pts.push([inc, r.net]);
+      peak = Math.max(peak, r.net);
+    }
+    series[y] = pts;
+  }
+  peak *= 1.12;
+  const x = v => ml + (v / maxIncome) * iw;
+  const yy = v => mt + ih - (v / peak) * ih;
+
+  const xstep = maxIncome > 120000 ? 25000 : 20000;
+  for (let v = 0; v <= maxIncome; v += xstep){
+    svg.appendChild(el("line", {x1:x(v), x2:x(v), y1:mt, y2:mt+ih, class:"grid"}));
+    svg.appendChild(el("text", {x:x(v), y:H-mb+17, class:"tick",
+      "text-anchor":"middle"}, "$" + (v/1000) + "k"));
+  }
+  const ystep = peak > 20000 ? 5000 : peak > 10000 ? 2500 : 1000;
+  for (let v = 0; v <= peak; v += ystep){
+    svg.appendChild(el("line", {x1:ml, x2:W-mr, y1:yy(v), y2:yy(v), class:"grid"}));
+    svg.appendChild(el("text", {x:ml-9, y:yy(v)+3.5, class:"tick",
+      "text-anchor":"end"}, "$" + (v/1000) + "k"));
+  }
+  svg.appendChild(el("line", {x1:ml, x2:ml, y1:mt, y2:mt+ih, class:"axis"}));
+  svg.appendChild(el("line", {x1:ml, x2:W-mr, y1:mt+ih, y2:mt+ih, class:"axis"}));
+
+  // the 400% FPL line
+  const cliffIncome = fplBase("2026") * 4;
+  if (cliffIncome <= maxIncome){
+    svg.appendChild(el("line", {x1:x(cliffIncome), x2:x(cliffIncome), y1:mt-2,
+      y2:mt+ih, stroke:"var(--y26)", "stroke-width":1.2,
+      "stroke-dasharray":"5 4", "stroke-opacity":.65}));
+    svg.appendChild(el("text", {x:x(cliffIncome)+6, y:mt+11, class:"slab",
+      fill:"var(--y26)"}, "400% of the poverty line"));
+    svg.appendChild(el("text", {x:x(cliffIncome)+6, y:mt+25, class:"tick",
+      fill:"var(--y26)"}, usd(cliffIncome)));
+  }
+
+  for (const [y, colour] of [["2025", "var(--y25)"], ["2026", "var(--y26)"]]){
+    const pts = series[y];
+    if (!pts.length) continue;
+    let d = "";
+    pts.forEach(([inc, net], i) => {
+      d += (i ? "L" : "M") + x(inc).toFixed(1) + " " + yy(net).toFixed(1);
+    });
+    svg.appendChild(el("path", {d, fill:"none", stroke:colour,
+      "stroke-width":2.6, "stroke-linejoin":"round"}));
+  }
+
+  // you
+  for (const [y, colour] of [["2025", "var(--y25)"], ["2026", "var(--y26)"]]){
+    const r = netPremium(S.income, S.state, S.age, y);
+    if (!r) continue;
+    svg.appendChild(el("circle", {cx:x(S.income), cy:yy(r.net), r:6.5,
+      fill:colour, stroke:"var(--card)", "stroke-width":2.5}));
+  }
+  const r26 = netPremium(S.income, S.state, S.age, "2026");
+  if (r26){
+    const anchor = x(S.income) > W * 0.7 ? "end" : "start";
+    const dx = anchor === "end" ? -12 : 12;
+    svg.appendChild(el("text", {x:x(S.income)+dx, y:yy(r26.net)-12,
+      class:"slab", "text-anchor":anchor, fill:"var(--gap)",
+      "font-weight":"700"}, "you, 2026: " + usd(r26.net)));
+  }
+  svg.appendChild(el("text", {x:ml+iw/2, y:H-6, class:"slab",
+    "text-anchor":"middle"}, "Annual household income"));
+}
+
+function drawStates(){
+  const svg = document.getElementById("statechart");
+  clear(svg);
+  const rows = Object.entries(D.states).map(([code, s]) => {
+    const g = benchmark(code, S.age, "2026");
+    const g25 = benchmark(code, S.age, "2025");
+    return {code, name: s.name, gross: g, gross25: g25};
+  }).filter(r => r.gross).sort((a, b) => a.gross - b.gross);
+
+  const W = 900, rowH = 19, mt = 26, mb = 34, ml = 118, mr = 90;
+  const H = mt + mb + rows.length * rowH;
+  svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
+  svg.setAttribute("width", W); svg.setAttribute("height", H);
+  const iw = W - ml - mr;
+  const peak = Math.max(...rows.map(r => r.gross)) * 1.06;
+  const x = v => ml + (v / peak) * iw;
+
+  const step = peak > 30000 ? 10000 : 5000;
+  for (let v = 0; v <= peak; v += step){
+    svg.appendChild(el("line", {x1:x(v), x2:x(v), y1:mt-6,
+      y2:mt + rows.length*rowH, class:"grid"}));
+    svg.appendChild(el("text", {x:x(v), y:mt-12, class:"tick",
+      "text-anchor":"middle"}, "$" + (v/1000) + "k"));
+  }
+
+  rows.forEach((r, i) => {
+    const cy = mt + i*rowH + rowH/2;
+    const mine = r.code === S.state;
+    svg.appendChild(el("line", {x1:x(r.gross25), x2:x(r.gross), y1:cy, y2:cy,
+      stroke:"var(--rule)", "stroke-width":mine ? 3 : 2}));
+    svg.appendChild(el("circle", {cx:x(r.gross25), cy, r:mine ? 4.5 : 3,
+      fill:"var(--y25)"}));
+    svg.appendChild(el("circle", {cx:x(r.gross), cy, r:mine ? 5.5 : 3.6,
+      fill:"var(--y26)"}));
+    svg.appendChild(el("text", {x:ml-10, y:cy+3.6, class:"slab",
+      "text-anchor":"end", "font-weight":mine ? "700" : "400",
+      fill:mine ? "var(--y26)" : "var(--ink-2)"}, r.name));
+    svg.appendChild(el("text", {x:x(r.gross)+9, y:cy+3.6, class:"tick",
+      "font-weight":mine ? "700" : "400",
+      fill:mine ? "var(--y26)" : "var(--ink-3)"}, usd(r.gross)));
+  });
+  svg.appendChild(el("text", {x:ml+iw/2, y:H-8, class:"slab",
+    "text-anchor":"middle"},
+    `Full annual benchmark premium at age ${S.age}: 2025 to 2026`));
+}
+
+/* --------------------------------------------------------------- render */
+function render(){
+  const fpl26 = fplPctOf(S.income, "2026");
+  const r25 = netPremium(S.income, S.state, S.age, "2025");
+  const r26 = netPremium(S.income, S.state, S.age, "2026");
+  const stName = D.states[S.state] ? D.states[S.state].name : S.state;
+
+  document.getElementById("hintline").textContent =
+    `That is ${pct(fpl26, 0)} of the federal poverty line for a single person `
+    + `in 2026. ${stName} has ${D.states[S.state] ? D.states[S.state].areas : 0} `
+    + `rating areas; these are state medians.`;
+
+  document.getElementById("v25").textContent = usd(r25.net);
+  document.getElementById("d25").textContent =
+    r25.credit > 0 ? `after a credit of ${usd(r25.credit)}` : "no credit due";
+  document.getElementById("v26").textContent = usd(r26.net);
+  document.getElementById("d26").textContent =
+    r26.credit > 0 ? `after a credit of ${usd(r26.credit)}` : "no credit at all";
+
+  const diff = r26.net - r25.net;
+  document.getElementById("vgap").textContent =
+    (diff >= 0 ? "+" : "−") + usd(Math.abs(diff));
+  document.getElementById("dgap").textContent =
+    r25.net > 0 ? `${pct(100 * (r26.net / r25.net - 1), 0)} more a year`
+                : "you previously paid nothing";
+
+  // How far from the cliff, and what crossing it would cost?
+  const cliffIncome = fplBase("2026") * 4;
+  const co = document.getElementById("callout");
+  const grossNow = r26.gross;
+  if (fpl26 <= 400){
+    const headroom = cliffIncome - S.income;
+    const atCliff = Math.min(grossNow, cliffIncome * applicablePct(400, "2026"));
+    const step = grossNow - atCliff;
+    co.className = "callout";
+    co.innerHTML = `You are <b>${usd(headroom)}</b> below the cliff. Earn more `
+      + `than <b>${usd(cliffIncome)}</b> and the credit stops completely: at `
+      + `your age in ${stName} the premium would jump from about `
+      + `<b>${usd(atCliff)}</b> to <b>${usd(grossNow)}</b>, a step of `
+      + `<b>${usd(step)}</b> for one extra dollar of income.`;
+  } else {
+    const atCliff = Math.min(grossNow, cliffIncome * applicablePct(400, "2026"));
+    co.className = "callout";
+    co.innerHTML = `You are <b>above the cliff</b>, so no tax credit is payable `
+      + `and you pay the full premium. Someone earning just under `
+      + `<b>${usd(cliffIncome)}</b> would pay about <b>${usd(atCliff)}</b> for `
+      + `the same plan &mdash; <b>${usd(grossNow - atCliff)}</b> less than you, `
+      + `on ${usd(S.income - cliffIncome)} less income. Your premium is `
+      + `<b>${pct(100 * grossNow / S.income)}</b> of your income.`;
+  }
+
+  // ---- age table
+  const ages = [27, 35, 45, 55, 60, 64];
+  const tb = document.querySelector("#agetable tbody");
+  const pctAt400 = applicablePct(400, "2026");
+  tb.innerHTML = ages.map(a => {
+    const gross = benchmark(S.state, a, "2026");
+    const under = Math.min(gross, cliffIncome * pctAt400);
+    const over = gross;
+    const you = a === S.age;
+    return `<tr class="${you ? "you" : ""}"><td>${a}${you ? " (you)" : ""}</td>`
+      + `<td>${usd(gross)}</td><td>${usd(under)}</td><td>${usd(over)}</td>`
+      + `<td>${usd(over - under)}</td>`
+      + `<td>${pct(100 * (over - under) / cliffIncome)}</td></tr>`;
+  }).join("");
+
+  drawCliff();
+  drawStates();
+}
+
+/* ----------------------------------------------------------------- boot */
+const sel = document.getElementById("state");
+Object.entries(D.states)
+  .sort((a, b) => a[1].name.localeCompare(b[1].name))
+  .forEach(([code, s]) => {
+    const o = document.createElement("option");
+    o.value = code; o.textContent = s.name;
+    sel.appendChild(o);
+  });
+sel.value = S.state;
+
+sel.addEventListener("change", e => { S.state = e.target.value; render(); });
+document.getElementById("age").addEventListener("input", e => {
+  const v = parseInt(e.target.value, 10);
+  if (v >= 14 && v <= 64){ S.age = v; render(); }
+});
+const incEl = document.getElementById("income");
+incEl.addEventListener("input", e => {
+  const v = parseMoney(e.target.value);
+  if (v >= 5000 && v <= 400000){ S.income = v; render(); }
+});
+incEl.addEventListener("blur", e => {
+  S.income = Math.min(400000, Math.max(5000, parseMoney(e.target.value)));
+  e.target.value = usd(S.income);
+  render();
+});
+
+document.getElementById("status").innerHTML =
+  `<b>Policy status, checked ${D.meta.policy_status_as_of}.</b> The enhanced `
+  + `premium tax credits expired on 31 December 2025. On 8 January 2026 the `
+  + `House passed a three-year extension by 230&ndash;196; the Senate had not `
+  + `acted, and a bipartisan bill restoring the credits for two years was `
+  + `reported to be in drafting. If Congress restores them, the 2026 figures `
+  + `here become a counterfactual rather than a description.`;
+document.getElementById("foot-gen").textContent =
+  `Built from ${D.meta.rating_areas} rating areas across ${D.meta.states} `
+  + `states. Payload generated ${D.meta.generated}. Everything is computed in `
+  + `your browser; nothing you type is sent anywhere.`;
+
+render();
+</script>
