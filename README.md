@@ -42,6 +42,19 @@ the paper and the tool shows up at build time.
 In progress. Benchmark premiums and the subsidy calculator are built and
 answer RQ1.
 
+**Validated against what actually happened.** The 2026 open enrolment period
+is now in: plan selections fell from 24.32 million to 23.13 million nationally,
+−4.9%. The federal marketplace lost 7.9% while state-based exchanges *grew*
+2.3%. Average premium after tax credit rose 57.5%, from $113 to $178 a month.
+
+The income gradient is the paper's thesis in one column: enrolment at
+400–500% of poverty — the group that lost its credit entirely — fell **44.3%**,
+while the 300–400% group just below the cliff *grew* 7.4%.
+
+Calibrating the model to the observed federal-marketplace decline implies a
+price semi-elasticity of **−0.08 to −0.11**, far below the −0.2 to −1.0 the
+literature offers, and a first-year morbidity rise of only 0.8% to 4.1%.
+
 **First result.** For a single 40-year-old at the median federal-marketplace
 rating area, the annual net benchmark premium:
 

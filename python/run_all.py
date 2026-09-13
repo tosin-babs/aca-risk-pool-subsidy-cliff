@@ -23,6 +23,7 @@ STEPS = [
     ("The non-group population", "population"),
     ("Cost structure of the private market", "costmodel"),
     ("Exit, morbidity and repricing", "selection"),
+    ("Validation against the 2026 open enrolment", "validation"),
     ("Calculator payload", "export_tool_data"),
 ]
 
