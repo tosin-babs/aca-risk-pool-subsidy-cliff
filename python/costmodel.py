@@ -33,6 +33,8 @@ import statsmodels.api as sm
 
 import config
 
+from functools import lru_cache
+
 warnings.filterwarnings("ignore")
 
 MEPS_DIR = config.ROOT.parent / "paper3" / "data" / "raw" / "meps"
@@ -51,7 +53,8 @@ FPL_BANDS = [(-np.inf, 138, "<138"), (138, 250, "138-250"),
              (250, 400, "250-400"), (400, np.inf, "400+")]
 
 
-def load():
+@lru_cache(maxsize=1)
+def _load_cached():
     frames = []
     for year, fname in FILES.items():
         yy = str(year)[-2:]
@@ -81,6 +84,11 @@ def load():
     return d
 
 
+def load():
+    """The pooled MEPS file. Read once per process; callers get a copy."""
+    return _load_cached().copy()
+
+
 def band(series, bands):
     out = pd.Series(pd.NA, index=series.index, dtype="object")
     for lo, hi, lab in bands:
@@ -88,23 +96,19 @@ def band(series, bands):
     return out
 
 
-def main():
+def private_sample():
+    """Under 65, privately insured, positive weight, banded."""
     d = load()
-    # The comparable population: under 65, privately insured, positive weight.
     m = d[(d["age"].between(0, 64)) & (d["inscov"] == 1)
           & (d["weight"] > 0)].copy()
     m["age_band"] = band(m["age"], AGE_BANDS)
     m["fpl_band"] = band(m["povlev"], FPL_BANDS)
-    m = m[m["age_band"].notna() & m["fpl_band"].notna()]
+    m = m[m["age_band"].notna() & m["fpl_band"].notna()].copy()
     m["cost"] = m["cost"].clip(lower=0)
+    return m
 
-    print(f"Under-65 privately insured, pooled 2019-2024: {len(m):,} "
-          f"person-years")
-    print(f"  of which non-group: {int(m['nongroup'].sum()):,} "
-          f"({100 * m['nongroup'].mean():.1f}%)")
-    print(f"  weighted: {m['weight'].sum() / 1e6:,.1f} million a year\n")
 
-    # ---- design matrix -----------------------------------------------------
+def design(m):
     X = pd.get_dummies(m[["age_band", "fpl_band"]], drop_first=True,
                        dtype=float)
     X["female"] = (m["SEX"] == 2).astype(float).to_numpy()
@@ -113,17 +117,32 @@ def main():
     for r in sorted(m["region"].dropna().unique())[1:]:
         X[f"region_{int(r)}"] = (m["region"] == r).astype(float).to_numpy()
     X["nongroup"] = m["nongroup"].astype(float).to_numpy()
-    X = sm.add_constant(X)
+    return sm.add_constant(X)
 
-    y = m["cost"].to_numpy(float)
-    w = m["weight"].to_numpy(float)
 
-    # Tweedie compound Poisson-gamma: a point mass at zero and a long right
-    # tail, the same structure priced in Paper 2.
-    fit = sm.GLM(y, X, family=sm.families.Tweedie(var_power=1.6,
-                                                  link=sm.families.links.Log()),
-                 freq_weights=w).fit(cov_type="cluster",
-                                     cov_kwds={"groups": m["cluster"].to_numpy()})
+@lru_cache(maxsize=1)
+def fitted():
+    """Fit the Tweedie model once; return the sample with predictions."""
+    m = private_sample()
+    X = design(m)
+    fit = sm.GLM(m["cost"].to_numpy(float), X,
+                 family=sm.families.Tweedie(var_power=config.TWEEDIE_VAR_POWER,
+                                            link=sm.families.links.Log()),
+                 freq_weights=m["weight"].to_numpy(float)).fit(
+        cov_type="cluster", cov_kwds={"groups": m["cluster"].to_numpy()})
+    m["pred_cost"] = fit.predict(X)
+    return m, fit, X
+
+
+def main():
+    m, fit, X = fitted()
+    m = m.copy()
+
+    print(f"Under-65 privately insured, pooled 2019-2024: {len(m):,} "
+          f"person-years")
+    print(f"  of which non-group: {int(m['nongroup'].sum()):,} "
+          f"({100 * m['nongroup'].mean():.1f}%)")
+    print(f"  weighted: {m['weight'].sum() / 1e6:,.1f} million a year\n")
 
     res = pd.DataFrame({"term": X.columns, "coef": fit.params,
                         "se": fit.bse, "z": fit.tvalues, "p": fit.pvalues})

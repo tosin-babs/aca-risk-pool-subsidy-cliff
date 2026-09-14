@@ -22,8 +22,13 @@ STEPS = [
     ("The cliff by age and place", "cliff"),
     ("The non-group population", "population"),
     ("Cost structure of the private market", "costmodel"),
-    ("Exit, morbidity and repricing", "selection"),
-    ("Validation against the 2026 open enrolment", "validation"),
+    ("What happened in the 2026 open enrolment", "validation"),
+    ("Exit, morbidity and repricing, calibrated to 2026", "selection"),
+    ("RQ3: the unsubsidised segment", "unsubsidised"),
+    ("Placebo, difference-in-differences and reinsurance", "did"),
+    ("RQ4: loss ratios and the MLR floor", "lossratio"),
+    ("RQ5: cost per person-year of coverage", "policycost"),
+    ("Figures", "exhibits"),
     ("Calculator payload", "export_tool_data"),
 ]
 

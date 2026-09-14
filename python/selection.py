@@ -1,36 +1,36 @@
 """
-Who leaves, and what that does to the cost of everyone who stays.
+Who leaves, what that does to the pool's expected cost, and whether one price
+response can describe 2026.
 
-The mechanism the paper is about. A premium rise makes some people drop
-coverage. The people who drop are not a random sample: coverage is worth less
-to someone who expects to use little care, so the price-sensitive leavers are
-disproportionately the cheap ones. Their departure raises the average cost of
-the pool that remains, which raises next year's premium, which prompts more
-exits. Whether that converges or runs away is the question.
+The pool. MEPS adults aged 18-64 with private coverage and income at or above
+100% of poverty carry the cost structure (costmodel.py shows the non-group
+segment is not distinguishable from the rest of the private market once
+observables are held constant). Their weights are raked to the 2025 open
+enrollment age and income marginals of the HealthCare.gov states, the
+platform the premium data describe. An earlier version post-stratified onto
+MEPS's own non-group mix, which put 55% of the pool above 400% FPL against 7%
+of actual plan selections.
 
-Three components, each a lever:
+Premiums. Each person is priced at the median benchmark for their own age in
+each year. An earlier version priced everyone at the 40-year-old benchmark,
+although the 3:1 age band applies to the gross premium and so decides the size
+of the cliff.
 
-  price response   a semi-elasticity of enrolment with respect to the net
-                   premium the enrollee actually pays. The literature for the
-                   individual market clusters between -0.2 and -1.0; CBO has
-                   used values near the middle of that. Reported across the
-                   range because the answer is sensitive to it.
+Price response. The default metric is the rise in the household's own payment
+for the benchmark, in percentage points of income; the response parameter is
+the share exiting per point. It is defined for households that paid nothing in
+2025, who are about 45% of plan selections. The proportional metric used
+earlier (exit per unit proportional rise, with a rise from zero set by rule)
+is kept as a sensitivity.
 
-  selection tilt   how much more likely a low-cost person is to leave than a
-                   high-cost one facing the same price change. Expressed as
-                   the ratio of exit odds per standard deviation of predicted
-                   log cost. A tilt of 1 is random exit and is reported as the
-                   floor case.
+Selection tilt. Exit probability is divided by tilt**z, z being standardised
+log expected cost, so at tilt > 1 lower-cost enrollees leave more readily.
 
-  iteration        the insurer reprices to the new pool, which prompts more
-                   exit. Run to convergence or to a declared spiral.
+Repricing. The benchmark is scaled by stayers' mean expected cost over the
+baseline mean; net payments and exits are recomputed from the baseline pool
+until the factor settles.
 
-The population is the MEPS under-65 privately insured sample reweighted to the
-subsidised and unsubsidised shares of marketplace enrolment, with expected cost
-from costmodel.py. Levels are not from MEPS; the pool's starting average cost
-is calibrated so that the baseline premium equals the observed 2025 benchmark.
-
-Writes Tables 7 and 8.
+Writes Tables 7 (grid), 8 (who leaves) and 10 (calibration and sensitivity).
 """
 
 from __future__ import annotations
@@ -41,243 +41,334 @@ import numpy as np
 import pandas as pd
 
 import config
-from costmodel import AGE_BANDS, FPL_BANDS, band, load
+import oep
+from benchmarks import load_benchmarks, median_gross_by_age
+from costmodel import band, fitted
 from subsidy import applicable_pct, income_at
 
 warnings.filterwarnings("ignore")
 
-ELASTICITIES = (-0.2, -0.4, -0.6, -1.0)
-TILTS = (1.0, 1.5, 2.0)
-MAX_ROUNDS = 25
-SPIRAL_THRESHOLD = 3.0      # premium tripling is called a spiral, not a level
+AGE_BANDS_OEP = [(17, 25, "Age_18_25"), (25, 34, "Age_26_34"),
+                 (34, 44, "Age_35_44"), (44, 54, "Age_45_54"),
+                 (54, 64, "Age_55_64")]
+FPL_BANDS_OEP = [(99.999, 150, "FPL_100_150"), (150, 200, "FPL_150_200"),
+                 (200, 250, "FPL_200_250"), (250, 300, "FPL_250_300"),
+                 (300, 400, "FPL_300_400"), (400, 500, "FPL_400_500"),
+                 (500, np.inf, "FPL_GT500")]
 
 
-def build_pool(verbose=True):
-    """The individual market: private-market cost structure, non-group mix.
+def rake(w, groups, targets, iters=200, tol=1e-10):
+    """Iterative proportional fitting of weights onto several marginals."""
+    w = w.copy()
+    for _ in range(iters):
+        worst = 0.0
+        for g, t in zip(groups, targets):
+            cur = pd.Series(w).groupby(g.to_numpy()).sum()
+            cur = cur / cur.sum()
+            f = (t / cur).reindex(cur.index).fillna(1.0)
+            w = w * g.map(f).to_numpy(float)
+            worst = max(worst, float((f - 1).abs().max()))
+        if worst < tol:
+            break
+    return w
 
-    costmodel.py establishes that non-group members are not distinguishable
-    from the rest of the private market on cost once age, income, sex, region
-    and health are controlled for, so the large sample carries the cost
-    structure. It does not carry the *composition*: the individual market is
-    older and poorer than employer coverage, and applying a marketplace
-    subsidy schedule to a population that mostly has employer coverage would
-    answer a question nobody asked.
 
-    So the large sample is post-stratified onto the non-group age-by-income
-    distribution. Cell means come from tens of thousands of observations; only
-    the cell weights come from the thin non-group sample.
+def build_pool(composition="oep", verbose=True):
+    """The marketplace-like pool with expected cost.
 
-    [VERIFY] These marginals should be replaced by the CMS Open Enrolment
-    Period distribution when that file is in hand. MEPS undercounts the
-    marketplace by about four to one, and if the undercount is selective
-    within cells the composition inherits that.
+    composition "oep"     raked to 2025 HealthCare.gov OEP age and income
+    composition "nongroup" post-stratified to MEPS non-group age x income
+                           (the earlier method, for sensitivity)
     """
-    d = load()
-    m = d[(d["age"].between(18, 64)) & (d["inscov"] == 1)
-          & (d["weight"] > 0) & (d["povlev"] > 0)].copy()
-    m["age_band"] = band(m["age"], AGE_BANDS)
-    m["fpl_band"] = band(m["povlev"], FPL_BANDS)
-    m = m[m["age_band"].notna() & m["fpl_band"].notna()].copy()
-    m["cost"] = m["cost"].clip(lower=0)
+    m, _, _ = fitted()
+    p = m[m["age"].between(config.SEL_AGE_MIN, config.SEL_AGE_MAX)
+          & (m["povlev"] >= 100)].copy()
+    p["age_band_oep"] = band(p["age"], AGE_BANDS_OEP)
+    p["fpl_band_oep"] = band(p["povlev"], FPL_BANDS_OEP)
+    p = p[p["age_band_oep"].notna() & p["fpl_band_oep"].notna()].copy()
+    w0 = p["weight"].to_numpy(float)
 
-    ng = m[m["nongroup"] == 1]
-    target = (ng.groupby(["age_band", "fpl_band"], observed=True)["weight"]
-              .sum())
-    target = target / target.sum()
-    current = (m.groupby(["age_band", "fpl_band"], observed=True)["weight"]
-               .sum())
-    current = current / current.sum()
-    factor = (target / current).replace([np.inf, -np.inf], np.nan).fillna(0.0)
-
-    key = list(zip(m["age_band"], m["fpl_band"]))
-    m["poststrat"] = [factor.get(k, 0.0) for k in key]
-    m["weight"] = m["weight"] * m["poststrat"]
-    m = m[m["weight"] > 0].copy()
-
+    if composition == "oep":
+        states = oep.hcgov_states()
+        age_t = oep.total(2025, states, config.OEP_AGE_COLS)
+        fpl_t = oep.total(2025, states, config.OEP_BANDS)
+        w = rake(w0, [p["age_band_oep"], p["fpl_band_oep"]],
+                 [age_t / age_t.sum(), fpl_t / fpl_t.sum()])
+    elif composition == "nongroup":
+        key = p["age_band_oep"].astype(str) + "|" + p["fpl_band_oep"].astype(str)
+        ng = pd.Series(w0).groupby(key.where(p["nongroup"] == 1).to_numpy()).sum()
+        cur = pd.Series(w0).groupby(key.to_numpy()).sum()
+        f = ((ng / ng.sum()) / (cur / cur.sum())).fillna(0.0)
+        w = w0 * key.map(f).fillna(0.0).to_numpy(float)
+    else:
+        raise ValueError(composition)
+    p["weight"] = w
+    p["rake_factor"] = w / w0 * (w0.sum() / w.sum())
+    p = p[p["weight"] > 0].copy()
     if verbose:
-        print("Post-stratified the private-market sample onto the non-group "
-              "age-by-income mix.")
-        print(f"  cells with no non-group support, dropped: "
-              f"{int((factor == 0).sum())} of {len(factor)}")
-        print(f"  reweighting factor: {m['poststrat'].min():.2f} to "
-              f"{m['poststrat'].max():.2f}")
-
-    # Predicted cost: the group mean is enough here, because what drives the
-    # result is the *ordering* of expected cost, not a precise level.
-    grp = m.groupby(["age_band", "fpl_band"], observed=True)
-    m["pred_cost"] = grp["cost"].transform(
-        lambda s: np.average(s, weights=m.loc[s.index, "weight"]))
-    # Within-cell variation matters too: community rating cannot price it, so
-    # it is part of what a healthy leaver walks away from.
-    m["pred_cost"] = 0.5 * m["pred_cost"] + 0.5 * m["cost"]
-    return m
+        print(f"Pool ({composition}): {len(p):,} person-years; weight factor "
+              f"{p['rake_factor'].min():.2f} to {p['rake_factor'].max():.2f}; "
+              f"share above 400% FPL "
+              f"{100 * p.loc[p['povlev'] > 400, 'weight'].sum() / p['weight'].sum():.1f}%")
+    return p
 
 
-def net_premium_for(row, bench_annual, year):
-    """What this person pays after any credit, at their income."""
-    fpl = row["povlev"]
-    pct = applicable_pct(fpl, year)
-    income = income_at(fpl, year)
-    if pct is None or (isinstance(pct, float) and np.isnan(pct)):
-        return bench_annual
-    return min(bench_annual, income * pct)
+def expected_cost(pool, basis=None, blend=0.0):
+    basis = basis or config.SEL_COST_BASIS
+    if basis == "tweedie":
+        return (1 - blend) * pool["pred_cost"].to_numpy(float) \
+            + blend * pool["cost"].to_numpy(float)
+    if basis == "cellmean":            # the earlier construction
+        g = pool.groupby(["age_band_oep", "fpl_band_oep"], observed=True)
+        cm = g.apply(lambda s: np.average(s["cost"], weights=s["weight"]))
+        cell = pd.MultiIndex.from_frame(pool[["age_band_oep", "fpl_band_oep"]])
+        cm = cm.reindex(cell).to_numpy(float)
+        return (1 - blend) * cm + blend * pool["cost"].to_numpy(float)
+    raise ValueError(basis)
 
 
-def simulate(pool, bench25, bench26, elasticity, tilt,
-             max_rounds=MAX_ROUNDS):
-    """Iterate exit and repricing until the pool's average cost settles."""
-    w = pool["weight"].to_numpy(float).copy()
-    cost = pool["pred_cost"].to_numpy(float)
-    fpl = pool["povlev"].to_numpy(float)
+class Market:
+    """Everything about the pool that does not change with the parameters."""
 
-    # Selection tilt on predicted cost, as in Paper 2's take-up model.
-    z = np.log(np.maximum(cost, 1.0))
-    z = (z - z.mean()) / (z.std() if z.std() > 0 else 1.0)
-    stay_odds = np.exp(np.log(tilt) * z) if tilt > 1 else np.ones_like(z)
+    def __init__(self, pool, bench, cost, pricing="age"):
+        self.w = pool["weight"].to_numpy(float)
+        self.cost = cost
+        self.fpl = pool["povlev"].to_numpy(float)
+        self.age = pool["age"].to_numpy(int)
+        g25, g26 = median_gross_by_age(bench, 2025), median_gross_by_age(bench, 2026)
+        if pricing == "age40":
+            self.gross25 = np.full(len(self.w), g25[40])
+            self.gross26 = np.full(len(self.w), g26[40])
+        else:
+            self.gross25 = np.array([g25[a] for a in self.age])
+            self.gross26 = np.array([g26[a] for a in self.age])
+        self.inc25 = income_at(self.fpl, 2025)
+        self.inc26 = income_at(self.fpl, 2026)
+        uniq = np.unique(self.fpl)
+        k25 = dict(zip(uniq, [applicable_pct(f, 2025) for f in uniq]))
+        k26 = dict(zip(uniq, [applicable_pct(f, 2026) for f in uniq]))
+        self.k25 = np.array([k25[f] for f in self.fpl])
+        self.k26 = np.array([k26[f] for f in self.fpl])
+        self.net25 = self.pay(self.gross25, self.k25, self.inc25)
+        lc = np.log(np.maximum(cost, 1.0))
+        mu = np.average(lc, weights=self.w)
+        sd = np.sqrt(np.average((lc - mu) ** 2, weights=self.w))
+        self.z = (lc - mu) / sd
+        self.base_cost = np.average(cost, weights=self.w)
+        self.exposed = self.fpl > 400
 
-    base_cost = np.average(cost, weights=w)
-    premium_factor = 1.0
-    history = []
+    @staticmethod
+    def pay(gross, k, inc):
+        """Payment after credit; NaN applicable percentage means no credit."""
+        return np.where(np.isfinite(k), np.minimum(gross, inc * k), gross)
 
-    net25 = np.array([min(bench25, income_at(f, 2025) * (applicable_pct(f, 2025) or 0))
-                      if applicable_pct(f, 2025) is not None else bench25
-                      for f in fpl])
+    def shock(self, net26, metric):
+        if metric == "pp_income":
+            return np.maximum(100 * (net26 / self.inc26 - self.net25 / self.inc25), 0)
+        rise = np.where(self.net25 > 0,
+                        net26 / np.maximum(self.net25, 1.0) - 1.0,
+                        np.where(net26 > 0, config.SEL_ZERO_BASE_RISE, 0.0))
+        return np.clip(rise, 0, 5)
 
-    for rnd in range(max_rounds):
-        bench = bench26 * premium_factor
-        net26 = np.array([
-            bench if applicable_pct(f, 2026) is None
-            else min(bench, income_at(f, 2026) * applicable_pct(f, 2026))
-            for f in fpl])
+    def simulate(self, response, tilt, metric=None):
+        metric = metric or config.SEL_RESPONSE_METRIC
+        tilt_div = tilt ** self.z
+        factor, hist = 1.0, []
+        for rnd in range(config.SEL_MAX_ROUNDS):
+            net26 = self.pay(self.gross26 * factor, self.k26, self.inc26)
+            p_exit = np.clip(response * self.shock(net26, metric) / tilt_div,
+                             0, 0.95)
+            w1 = self.w * (1 - p_exit)
+            new_factor = np.average(self.cost, weights=w1) / self.base_cost
+            hist.append(new_factor)
+            done = abs(new_factor - factor) < 1e-5
+            factor = new_factor
+            if done or factor > config.SEL_SPIRAL_THRESHOLD:
+                break
+        ex, sub = self.exposed, ~self.exposed
+        return {
+            "retention_pct": 100 * w1.sum() / self.w.sum(),
+            "morbidity_rise_pct": 100 * (factor - 1),
+            "rounds": len(hist),
+            "spiral": bool(factor > config.SEL_SPIRAL_THRESHOLD),
+            "retention_above_400_pct": 100 * w1[ex].sum() / self.w[ex].sum(),
+            "retention_below_400_pct": 100 * w1[sub].sum() / self.w[sub].sum(),
+            "p_exit": p_exit, "net26": net26,
+        }
 
-        # Proportional rise in what the enrollee pays, floored at zero.
-        rise = np.where(net25 > 0, net26 / np.maximum(net25, 1.0) - 1.0,
-                        np.where(net26 > 0, 1.0, 0.0))
-        rise = np.clip(rise, 0, 5)
+    def calibrate(self, target, tilt, metric=None):
+        lo, hi = 0.0, 1.0
+        for _ in range(60):
+            mid = (lo + hi) / 2
+            if self.simulate(mid, tilt, metric)["retention_pct"] / 100 > target:
+                lo = mid
+            else:
+                hi = mid
+        return (lo + hi) / 2
 
-        # Exit share from the semi-elasticity, tilted toward the cheap.
-        p_exit = np.clip(-elasticity * rise, 0, 0.95)
-        p_exit = np.clip(p_exit / np.maximum(stay_odds, 1e-6), 0, 0.95)
+    def calibrate_segments(self, target_above, target_below, tilt, metric=None):
+        """One response for households above 400% FPL and another below,
+        solved jointly so that each segment's retention matches."""
+        ra, rb = 0.02, 0.02
+        for _ in range(30):
+            for seg in ("above", "below"):
+                lo, hi = 0.0, 2.0
+                for _ in range(40):
+                    mid = (lo + hi) / 2
+                    resp = np.where(self.exposed, mid if seg == "above" else ra,
+                                    mid if seg == "below" else rb)
+                    r = self.simulate(resp, tilt, metric)
+                    got = (r["retention_above_400_pct"] if seg == "above"
+                           else r["retention_below_400_pct"]) / 100
+                    tgt = target_above if seg == "above" else target_below
+                    if got > tgt:
+                        lo = mid
+                    else:
+                        hi = mid
+                if seg == "above":
+                    ra = (lo + hi) / 2
+                else:
+                    rb = (lo + hi) / 2
+        resp = np.where(self.exposed, ra, rb)
+        return ra, rb, self.simulate(resp, tilt, metric)
 
-        w_new = w * (1 - p_exit)
-        if w_new.sum() <= 0:
-            break
-        new_cost = np.average(cost, weights=w_new)
-        new_factor = new_cost / base_cost
 
-        history.append({"round": rnd, "enrolment_index": w_new.sum() / w.sum(),
-                        "mean_cost": new_cost,
-                        "premium_factor": new_factor})
-
-        if abs(new_factor - premium_factor) < 1e-4:
-            premium_factor = new_factor
-            break
-        if new_factor > SPIRAL_THRESHOLD:
-            premium_factor = new_factor
-            break
-        premium_factor = new_factor
-
-    final = history[-1] if history else {
-        "enrolment_index": 1.0, "mean_cost": base_cost, "premium_factor": 1.0}
-    return {
-        "baseline_mean_cost": base_cost,
-        "final_mean_cost": final["mean_cost"],
-        "morbidity_rise_pct": 100 * (final["mean_cost"] / base_cost - 1),
-        "enrolment_retained_pct": 100 * final["enrolment_index"],
-        "premium_factor": final["premium_factor"],
-        "rounds": len(history),
-        "spiral": bool(final["premium_factor"] > SPIRAL_THRESHOLD),
-    }
+def target_retention():
+    """2026 over 2025 selections in the income bands the pool represents,
+    HealthCare.gov states of 2026."""
+    s = oep.hcgov_states()
+    a = oep.total(2025, s, config.OEP_BANDS).sum()
+    b = oep.total(2026, s, config.OEP_BANDS).sum()
+    ex = list(config.EXPOSED_BANDS)
+    sub = [c for c in config.OEP_BANDS if c not in ex]
+    obs_ex = oep.total(2026, s, ex).sum() / oep.total(2025, s, ex).sum()
+    obs_sub = oep.total(2026, s, sub).sum() / oep.total(2025, s, sub).sum()
+    return b / a, obs_ex, obs_sub
 
 
 def main():
-    pool = build_pool()
-    bench = pd.read_csv(config.DERIVED / "benchmarks.csv")
-    b40 = bench[bench["age"] == 40]
-    bench25 = float(b40[b40["year"] == 2025]["slcsp"].median()) * 12
-    bench26 = float(b40[b40["year"] == 2026]["slcsp"].median()) * 12
+    bench = load_benchmarks(states=oep.hcgov_states())
+    pool = build_pool("oep")
+    metric = config.SEL_RESPONSE_METRIC
+    mk = Market(pool, bench, expected_cost(pool))
+    target, obs_ex, obs_sub = target_retention()
+    print(f"Target retention, HealthCare.gov bands 100%+: {100 * target:.2f}% "
+          f"(above 400%: {100 * obs_ex:.1f}%, below: {100 * obs_sub:.1f}%)")
 
-    print(f"\nPool: {len(pool):,} person-years carrying the cost structure, "
-          f"reweighted\n  to the individual market's composition. "
-          f"Enrolment levels are indexed, not\n  absolute: MEPS cannot supply "
-          f"the headcount and CMS does.")
-    print(f"Benchmark, age 40, national median: ${bench25:,.0f} (2025) -> "
-          f"${bench26:,.0f} (2026)\n")
-
+    # ---- Table 7: the grid -------------------------------------------------
     rows = []
-    for e in ELASTICITIES:
-        for t in TILTS:
-            r = simulate(pool, bench25, bench26, e, t)
-            r.update(elasticity=e, tilt=t)
-            rows.append(r)
+    for e in config.SEL_RESPONSE_GRID[metric]:
+        for t in config.SEL_TILTS:
+            r = mk.simulate(e, t)
+            rows.append({"metric": metric, "response": e, "tilt": t,
+                         **{k: v for k, v in r.items()
+                            if k not in ("p_exit", "net26")}})
     t7 = pd.DataFrame(rows)
     t7.to_csv(config.TABLES / "table7_selection.csv", index=False)
+    print("\n=== Grid ===")
+    print(t7[["response", "tilt", "retention_pct", "morbidity_rise_pct",
+              "retention_above_400_pct", "retention_below_400_pct",
+              "rounds"]].round(2).to_string(index=False))
 
-    print("=== Exit, morbidity and repricing ===")
-    print(f"  {'elast':>6} {'tilt':>5} {'enrolment kept':>15} "
-          f"{'morbidity rise':>15} {'premium factor':>15} {'rounds':>7}")
-    for _, r in t7.iterrows():
-        flag = "  SPIRAL" if r["spiral"] else ""
-        print(f"  {r['elasticity']:>6.1f} {r['tilt']:>5.1f} "
-              f"{r['enrolment_retained_pct']:>14.1f}% "
-              f"{r['morbidity_rise_pct']:>14.1f}% "
-              f"{r['premium_factor']:>15.3f} {int(r['rounds']):>7}{flag}")
-
-    # ---- Table 8: who leaves --------------------------------------------
-    e, t = -0.4, 1.5
-    w = pool["weight"].to_numpy(float)
-    cost = pool["pred_cost"].to_numpy(float)
-    fpl = pool["povlev"].to_numpy(float)
-    z = np.log(np.maximum(cost, 1.0)); z = (z - z.mean()) / z.std()
-    stay = np.exp(np.log(t) * z)
-    net25 = np.array([bench25 if applicable_pct(f, 2025) is None
-                      else min(bench25, income_at(f, 2025) * applicable_pct(f, 2025))
-                      for f in fpl])
-    net26 = np.array([bench26 if applicable_pct(f, 2026) is None
-                      else min(bench26, income_at(f, 2026) * applicable_pct(f, 2026))
-                      for f in fpl])
-    rise = np.clip(np.where(net25 > 0, net26 / np.maximum(net25, 1) - 1, 1), 0, 5)
-    p_exit = np.clip(np.clip(-e * rise, 0, .95) / np.maximum(stay, 1e-6), 0, .95)
-
-    pool = pool.assign(p_exit=p_exit, net25=net25, net26=net26,
-                       exit_weight=w * p_exit)
+    # ---- Table 10: calibration, primary and sensitivity --------------------
+    specs = [("Primary: raked to OEP, own-age benchmark, Tweedie cost",
+              dict(composition="oep", pricing="age", basis="tweedie",
+                   blend=0.0, metric=metric))]
+    for bw in config.SEL_COST_BLEND_SENSITIVITY:
+        specs.append((f"Cost {int(100 * (1 - bw))}/{int(100 * bw)} blend of "
+                      f"prediction and realised cost",
+                      dict(composition="oep", pricing="age", basis="tweedie",
+                           blend=bw, metric=metric)))
+    other = "proportional" if metric == "pp_income" else "pp_income"
+    specs += [
+        ("Proportional price metric",
+         dict(composition="oep", pricing="age", basis="tweedie", blend=0.0,
+              metric=other)),
+        ("Everyone priced at the age-40 benchmark",
+         dict(composition="oep", pricing="age40", basis="tweedie", blend=0.0,
+              metric=metric)),
+        ("Earlier specification: MEPS non-group mix, age-40 benchmark, "
+         "50/50 cell-mean blend, proportional metric",
+         dict(composition="nongroup", pricing="age40", basis="cellmean",
+              blend=0.5, metric="proportional")),
+    ]
+    pools = {"oep": pool}
     rows = []
-    for col in ("fpl_band", "age_band"):
-        for g, s in pool.groupby(col, observed=True):
+    for label, s in specs:
+        if s["composition"] not in pools:
+            pools[s["composition"]] = build_pool(s["composition"])
+        pl = pools[s["composition"]]
+        m_ = Market(pl, bench, expected_cost(pl, s["basis"], s["blend"]),
+                    pricing=s["pricing"])
+        for t in config.SEL_TILTS:
+            e = m_.calibrate(target, t, s["metric"])
+            r = m_.simulate(e, t, s["metric"])
+            rows.append({"specification": label, "metric": s["metric"],
+                         "tilt": t, "calibrated_response": e,
+                         "retention_pct": r["retention_pct"],
+                         "morbidity_rise_pct": r["morbidity_rise_pct"],
+                         "model_change_above_400_pct":
+                             r["retention_above_400_pct"] - 100,
+                         "model_change_below_400_pct":
+                             r["retention_below_400_pct"] - 100,
+                         "observed_change_above_400_pct": 100 * (obs_ex - 1),
+                         "observed_change_below_400_pct": 100 * (obs_sub - 1),
+                         "rounds": r["rounds"]})
+    # Two responses, one per segment, fitted to both observed moments.
+    for t in config.SEL_TILTS:
+        ra, rb, r = mk.calibrate_segments(obs_ex, obs_sub, t)
+        rows.append({"specification": "Two responses: above and below 400% FPL",
+                     "metric": metric, "tilt": t,
+                     "calibrated_response": rb,
+                     "calibrated_response_above_400": ra,
+                     "response_ratio_above_to_below": ra / rb,
+                     "retention_pct": r["retention_pct"],
+                     "morbidity_rise_pct": r["morbidity_rise_pct"],
+                     "model_change_above_400_pct": r["retention_above_400_pct"] - 100,
+                     "model_change_below_400_pct": r["retention_below_400_pct"] - 100,
+                     "observed_change_above_400_pct": 100 * (obs_ex - 1),
+                     "observed_change_below_400_pct": 100 * (obs_sub - 1),
+                     "rounds": r["rounds"]})
+    t10 = pd.DataFrame(rows)
+    t10.to_csv(config.TABLES / "table10_calibration.csv", index=False)
+    print("\n=== Calibration ===")
+    print(t10.drop(columns=["specification"]).round(3).to_string(index=False))
+    print("  specs:", *[f"\n   {i}: {s[0]}" for i, s in enumerate(specs)])
+
+    # ---- Table 8: who leaves at the calibrated primary, tilt 1.5 ------------
+    t_ill = 1.5
+    e_ill = float(t10[(t10["specification"] == specs[0][0])
+                      & (t10["tilt"] == t_ill)]["calibrated_response"].iloc[0])
+    r = mk.simulate(e_ill, t_ill)
+    p_exit = r["p_exit"]
+    pool = pool.assign(p_exit=p_exit, net25=mk.net25, net26=r["net26"],
+                       exp_cost=mk.cost, exit_weight=mk.w * p_exit)
+    rows = []
+    for col in ("fpl_band_oep", "age_band_oep", None):
+        groups = pool.groupby(col, observed=True) if col else [("All", pool)]
+        for g, s in groups:
+            sw = s["weight"]
             rows.append({
-                "dimension": col, "group": str(g),
-                "share_of_pool_pct": 100 * s["weight"].sum() / w.sum(),
-                "mean_net_2025": np.average(s["net25"], weights=s["weight"]),
-                "mean_net_2026": np.average(s["net26"], weights=s["weight"]),
-                "exit_rate_pct": 100 * np.average(s["p_exit"],
-                                                  weights=s["weight"]),
+                "dimension": {"fpl_band_oep": "Income", "age_band_oep": "Age",
+                              None: "All"}[col],
+                "group": str(g), "response": e_ill, "tilt": t_ill,
+                "share_of_pool_pct": 100 * sw.sum() / mk.w.sum(),
+                "mean_net_2025": np.average(s["net25"], weights=sw),
+                "mean_net_2026": np.average(s["net26"], weights=sw),
+                "exit_rate_pct": 100 * np.average(s["p_exit"], weights=sw),
                 "mean_cost_of_leavers":
-                    (np.average(s["pred_cost"], weights=s["exit_weight"])
-                     if s["exit_weight"].sum() > 0 else np.nan),
+                    np.average(s["exp_cost"], weights=s["exit_weight"])
+                    if s["exit_weight"].sum() > 0 else np.nan,
                 "mean_cost_of_stayers":
-                    np.average(s["pred_cost"],
-                               weights=s["weight"] * (1 - s["p_exit"])),
+                    np.average(s["exp_cost"], weights=sw * (1 - s["p_exit"])),
             })
     t8 = pd.DataFrame(rows)
+    t8["leaver_cost_discount_pct"] = 100 * (1 - t8["mean_cost_of_leavers"]
+                                            / t8["mean_cost_of_stayers"])
     t8.to_csv(config.TABLES / "table8_who_leaves.csv", index=False)
-
-    print(f"\n=== Who leaves, at elasticity {e} and tilt {t} ===")
-    for dim in ("fpl_band", "age_band"):
-        print(f"\n  {'group':<10} {'share':>7} {'net 25':>9} {'net 26':>9} "
-              f"{'exit':>7} {'cost, leavers':>14} {'cost, stayers':>14}")
-        for _, r in t8[t8["dimension"] == dim].iterrows():
-            print(f"  {r['group']:<10} {r['share_of_pool_pct']:>6.1f}% "
-                  f"${r['mean_net_2025']:>8,.0f} ${r['mean_net_2026']:>8,.0f} "
-                  f"{r['exit_rate_pct']:>6.1f}% "
-                  f"${r['mean_cost_of_leavers']:>13,.0f} "
-                  f"${r['mean_cost_of_stayers']:>13,.0f}")
-
-    lv = np.average(pool["pred_cost"], weights=pool["exit_weight"])
-    sv = np.average(pool["pred_cost"], weights=w * (1 - p_exit))
-    print(f"\n  Leavers cost ${lv:,.0f} on average; stayers ${sv:,.0f}. "
-          f"Leavers are\n  {100 * (1 - lv / sv):.0f}% cheaper than the people "
-          f"they leave behind, which is\n  what moves the pool average.")
-    print(f"\nwrote tables 7 and 8")
+    print("\n=== Who leaves (calibrated primary, tilt 1.5) ===")
+    print(t8.round(2).to_string(index=False))
+    print("\nwrote tables 7, 8 and 10")
 
 
 if __name__ == "__main__":

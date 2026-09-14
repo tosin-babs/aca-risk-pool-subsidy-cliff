@@ -34,9 +34,12 @@ def cliff_table(bench, year=2026):
     b = bench[bench["year"] == year].copy()
     b = b[b["slcsp"].notna()]
 
-    income_400 = income_at(400, year)
+    # Income at 400% FPL is state-specific: Alaska and Hawaii have their own
+    # poverty guidelines.
+    income_400 = b["StateCode"].map(lambda s: income_at(400, year, state=s))
     pct_400 = applicable_pct(400, year)
     contribution_400 = income_400 * pct_400
+    b["income_400"] = income_400
 
     b["gross_annual"] = b["slcsp"] * 12.0
     b["net_at_400"] = np.minimum(b["gross_annual"], contribution_400)

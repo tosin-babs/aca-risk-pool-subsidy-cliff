@@ -97,6 +97,34 @@ def benchmark_for(year):
     return out
 
 
+def load_benchmarks(states=None, both_years=True):
+    """benchmarks.csv, optionally restricted to states and to rating areas
+    with a benchmark in both years (so that a 2025-2026 comparison is of the
+    same places: Illinois's rating areas are in the 2025 file only)."""
+    b = pd.read_csv(config.DERIVED / "benchmarks.csv")
+    b = b[b["slcsp"].notna()]
+    if states is not None:
+        b = b[b["StateCode"].isin(states)]
+    if both_years:
+        key = ["StateCode", "RatingAreaId", "age"]
+        n = b.groupby(key)["year"].transform("nunique")
+        b = b[n == len(config.YEARS)]
+    return b
+
+
+def median_gross_by_age(bench, year):
+    """Annual median benchmark across rating areas, by single year of age."""
+    s = bench[bench["year"] == year]
+    return (s.groupby("age")["slcsp"].median() * 12.0).to_dict()
+
+
+def band_gross(bench, year):
+    """Mean of the age medians over each OEP adult age band."""
+    by_age = median_gross_by_age(bench, year)
+    return {col: float(np.mean([by_age[a] for a in range(lo, hi + 1)]))
+            for col, (lo, hi) in config.AGE_BAND_RANGES.items()}
+
+
 def main():
     print("Computing benchmark premiums from the CMS Rate PUFs ...")
     frames = [benchmark_for(y) for y in config.YEARS]

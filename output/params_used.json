@@ -1,0 +1,135 @@
+{
+  "params": {
+    "SEED": 2026,
+    "LONELY_PSU": "adjust",
+    "POLICY_STATUS_AS_OF": "2026-09-14",
+    "RATE_PUF": "{2025: PosixPath('/Users/temitope/Desktop/paper2/paper4/data/raw/cms/2025_rate-puf/Rate_PUF.csv'), 2026: PosixPath('/Users/temitope/Desktop/paper2/paper4/data/raw/cms/2026_rate-puf/rate-puf.csv')}",
+    "PLAN_PUF": "{2025: PosixPath('/Users/temitope/Desktop/paper2/paper4/data/raw/cms/2025_plan-attributes-puf/Plan_Attributes_PUF.csv'), 2026: PosixPath('/Users/temitope/Desktop/paper2/paper4/data/raw/cms/2026_plan-attributes-puf/plan-attributes-puf.csv')}",
+    "YEARS": "(2025, 2026)",
+    "AGE_MIN_LABEL": "0-14",
+    "AGE_MAX_LABEL": "64 and over",
+    "AGE_MIN_VALUE": 14,
+    "AGE_MAX_VALUE": 64,
+    "RATE_SENTINEL": 9000.0,
+    "BENCHMARK_METAL": "Silver",
+    "LOWEST_COST_METAL": "('Bronze', 'Expanded Bronze')",
+    "APPLICABLE_PCT_2025": "[(150, 0.0, 0.0), (200, 0.0, 0.02), (250, 0.02, 0.04), (300, 0.04, 0.06), (400, 0.06, 0.085), (inf, 0.085, 0.085)]",
+    "APPLICABLE_PCT_2026": "[(133, 0.021, 0.021), (150, 0.0314, 0.0419), (200, 0.0419, 0.066), (250, 0.066, 0.0844), (300, 0.0844, 0.0996), (400, 0.0996, 0.0996), (inf, None, None)]",
+    "APPLICABLE_PCT": "{2025: [(150, 0.0, 0.0), (200, 0.0, 0.02), (250, 0.02, 0.04), (300, 0.04, 0.06), (400, 0.06, 0.085), (inf, 0.085, 0.085)], 2026: [(133, 0.021, 0.021), (150, 0.0314, 0.0419), (200, 0.0419, 0.066), (250, 0.066, 0.0844), (300, 0.0844, 0.0996), (400, 0.0996, 0.0996), (inf, None, None)]}",
+    "FPL_BASE": "{2025: 15060.0, 2026: 15650.0}",
+    "FPL_INCREMENT": "{2025: 5380.0, 2026: 5500.0}",
+    "FPL_BASE_STATE": "{'AK': {2025: 18810.0, 2026: 19550.0}, 'HI': {2025: 17310.0, 2026: 17990.0}}",
+    "FPL_INCREMENT_STATE": "{'AK': {2025: 6730.0, 2026: 6880.0}, 'HI': {2025: 6190.0, 2026: 6330.0}}",
+    "OEP_STATE_FILES": "{2024: PosixPath('/Users/temitope/Desktop/paper2/paper4/data/raw/oep/2024_state-level/2024 OEP State-Level Public Use File.csv'), 2025: PosixPath('/Users/temitope/Desktop/paper2/paper4/data/raw/oep/2025_state-level/2025 OEP State-Level Public Use File.csv'), 2026: PosixPath('/Users/temitope/Desktop/paper2/paper4/data/raw/oep/2026_state-level/2026 OEP State-Level PUF/2026 OEP State-Level Public Use File.csv')}",
+    "OEP_COUNTY_FILES": "{2024: PosixPath('/Users/temitope/Desktop/paper2/paper4/data/raw/oep/2024_county-level/2024 OEP County-Level Public Use File.csv'), 2025: PosixPath('/Users/temitope/Desktop/paper2/paper4/data/raw/oep/2025_county-level/2025 OEP County-Level Public Use File.csv'), 2026: PosixPath('/Users/temitope/Desktop/paper2/paper4/data/raw/oep/2026_county-level/2026 OEP County-Level PUF/2026 OEP County-Level Public Use File.csv')}",
+    "OEP_YEARS": "(2024, 2025, 2026)",
+    "OEP_BANDS": "['FPL_100_150', 'FPL_150_200', 'FPL_200_250', 'FPL_250_300', 'FPL_300_400', 'FPL_400_500', 'FPL_GT500']",
+    "OEP_BAND_LABELS": "{'FPL_LT100': 'Below 100%', 'FPL_100_150': '100-150%', 'FPL_150_200': '150-200%', 'FPL_200_250': '200-250%', 'FPL_250_300': '250-300%', 'FPL_300_400': '300-400%', 'FPL_400_500': '400-500%', 'FPL_GT500': 'Above 500%', 'FPL_OTHR': 'Other or unknown'}",
+    "EXPOSED_BANDS": "('FPL_400_500', 'FPL_GT500')",
+    "BELOW_NOTCH_BAND": "FPL_300_400",
+    "PEER_BANDS": "('FPL_100_150', 'FPL_150_200', 'FPL_200_250', 'FPL_250_300')",
+    "BAND_MIDPOINTS": "{'FPL_100_150': (125,), 'FPL_150_200': (175,), 'FPL_200_250': (225,), 'FPL_250_300': (275,), 'FPL_300_400': (350,), 'FPL_400_500': (450,), 'FPL_GT500': (550, 650, 800)}",
+    "OEP_AGE_COLS": "['Age_18_25', 'Age_26_34', 'Age_35_44', 'Age_45_54', 'Age_55_64']",
+    "AGE_BAND_RANGES": "{'Age_18_25': (18, 25), 'Age_26_34': (26, 34), 'Age_35_44': (35, 44), 'Age_45_54': (45, 54), 'Age_55_64': (55, 64)}",
+    "OEP_INCOME_RECODE_STATES": "('CT', 'MN', 'NY', 'DC')",
+    "PLATFORM_REFERENCE_YEAR": 2026,
+    "REINSURANCE_1332_STATES": "('AK', 'CO', 'DE', 'GA', 'ME', 'MD', 'MN', 'MT', 'NH', 'NJ', 'ND', 'OR', 'PA', 'RI', 'WI')",
+    "SEL_AGE_MIN": 18,
+    "SEL_AGE_MAX": 64,
+    "SEL_RESPONSE_METRIC": "pp_income",
+    "SEL_ZERO_BASE_RISE": 1.0,
+    "SEL_RESPONSE_GRID": "{'pp_income': (0.005, 0.01, 0.02, 0.04), 'proportional': (0.2, 0.4, 0.6, 1.0)}",
+    "SEL_TILTS": "(1.0, 1.5, 2.0)",
+    "SEL_ILLUSTRATIVE": "{'pp_income': (0.02, 1.5), 'proportional': (0.4, 1.5)}",
+    "SEL_COST_BASIS": "tweedie",
+    "SEL_COST_BLEND_SENSITIVITY": "(0.25, 0.5)",
+    "SEL_MAX_ROUNDS": 25,
+    "SEL_SPIRAL_THRESHOLD": 3.0,
+    "TWEEDIE_VAR_POWER": 1.6,
+    "POLICY_CONTROL_BAND": "FPL_100_150",
+    "POLICY_PARTIAL_CEILING": 600,
+    "CBO_DEFICIT_2026_2035": 350000000000.0,
+    "CBO_INSURED_2035": 3800000.0,
+    "MLR_EXCLUDE_STATES": "('Grand Total', 'AS', 'GU', 'MP', 'PR', 'VI')",
+    "MLR_CLAIMS_TRENDS": "(0.04, 0.06, 0.08, 0.1, 0.12)",
+    "FPL_GRID": "(100, 133, 150, 200, 250, 300, 350, 400, 401, 450, 500, 600)",
+    "AGE_GRID": "(21, 27, 40, 50, 60, 64)",
+    "FIG_DPI": 300,
+    "PALETTE": "{'y2025': '#1B6CA8', 'y2026': '#B03A2E', 'gain': '#117A65', 'ink': '#1A1A1A', 'muted': '#7F8C8D', 'rule': '#D5D8DC', 'warn': '#B7950B'}"
+  },
+  "versions": {
+    "python": "3.14.6",
+    "numpy": "2.5.3",
+    "pandas": "3.0.5",
+    "scipy": "1.18.1",
+    "statsmodels": "0.15.0",
+    "matplotlib": "3.11.2"
+  },
+  "timings": [
+    {
+      "step": "Benchmark premiums from the CMS Rate PUFs",
+      "module": "benchmarks",
+      "seconds": 37.6
+    },
+    {
+      "step": "Net premiums and the subsidy schedules",
+      "module": "subsidy",
+      "seconds": 0.1
+    },
+    {
+      "step": "The cliff by age and place",
+      "module": "cliff",
+      "seconds": 0.1
+    },
+    {
+      "step": "The non-group population",
+      "module": "population",
+      "seconds": 0.8
+    },
+    {
+      "step": "Cost structure of the private market",
+      "module": "costmodel",
+      "seconds": 3.4
+    },
+    {
+      "step": "What happened in the 2026 open enrolment",
+      "module": "validation",
+      "seconds": 0.1
+    },
+    {
+      "step": "Exit, morbidity and repricing, calibrated to 2026",
+      "module": "selection",
+      "seconds": 17.6
+    },
+    {
+      "step": "RQ3: the unsubsidised segment",
+      "module": "unsubsidised",
+      "seconds": 0.1
+    },
+    {
+      "step": "Placebo, difference-in-differences and reinsurance",
+      "module": "did",
+      "seconds": 0.8
+    },
+    {
+      "step": "RQ4: loss ratios and the MLR floor",
+      "module": "lossratio",
+      "seconds": 3.9
+    },
+    {
+      "step": "RQ5: cost per person-year of coverage",
+      "module": "policycost",
+      "seconds": 0.0
+    },
+    {
+      "step": "Figures",
+      "module": "exhibits",
+      "seconds": 2.1
+    },
+    {
+      "step": "Calculator payload",
+      "module": "export_tool_data",
+      "seconds": 0.1
+    }
+  ]
+}

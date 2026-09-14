@@ -33,13 +33,14 @@ HEAD = """<!doctype html>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="An interactive calculator for the price, \
-affordability and solvency of informal-sector health cover in Nigeria under the \
-NHIA Act 2022, built on the 2023/24 General Household Survey-Panel.">
+<meta name="description" content="An interactive calculator for what the expiry \
+of the enhanced ACA premium tax credits did to the net benchmark premium, by age, \
+state and income, built on the CMS Rate and Plan Attributes public use files for \
+2025 and 2026.">
 <meta name="author" content="Oluwatosin Dorcas Babalola">
-<meta property="og:title" content="The Naira Gap">
-<meta property="og:description" content="What health cover costs in Nigeria, and \
-what people can pay.">
+<meta property="og:title" content="The Subsidy Cliff">
+<meta property="og:description" content="What the expiry of the enhanced premium \
+tax credits did to your ACA premium, and what crossing 400% of poverty costs.">
 <meta property="og:type" content="website">
 <link rel="icon" href="data:image/svg+xml,\
 %3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E\

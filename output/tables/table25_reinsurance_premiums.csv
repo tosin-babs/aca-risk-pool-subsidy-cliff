@@ -1,0 +1,4 @@
+group,n_states,states,mean_state_median_growth_pct,mean_burden_age60_pct
+No waiver,23,AL AR AZ FL HI IA IN KS LA MI MO MS NC NE OH OK SC SD TN TX UT WV WY,25.189175494747943,26.869517596361863
+1332 reinsurance,7,AK DE MT ND NH OR WI,14.707964970722715,24.754104106429345
+Difference (HC1 SE),30,"se 5.00, p 0.036",-10.481210524025228,

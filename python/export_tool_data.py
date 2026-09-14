@@ -43,6 +43,10 @@ def main():
     b = pd.read_csv(config.DERIVED / "benchmarks.csv")
     b = b[b["slcsp"].notna()].copy()
     b["age"] = b["age"].astype(int)
+    # Only states filed in both years: Illinois left HealthCare.gov for 2026
+    # and a state with one year of rates cannot show a change.
+    both = b.groupby("StateCode")["year"].nunique()
+    b = b[b["StateCode"].isin(both[both == len(config.YEARS)].index)]
 
     states = {}
     for (st, year), g in b.groupby(["StateCode", "year"]):
@@ -74,9 +78,9 @@ def main():
                                 .ngroups),
             "generated": date.today().isoformat(),
             "policy_status_as_of": config.POLICY_STATUS_AS_OF,
-            "coverage_note": "HealthCare.gov states only. State-based "
-                             "exchanges file their own rates and are not in "
-                             "this file.",
+            "coverage_note": "States on HealthCare.gov in both 2025 and "
+                             "2026. State-based exchanges file their own "
+                             "rates and are not in this file.",
         },
         "schedule": {
             "2025": [[u if np.isfinite(u) else None, s, e]

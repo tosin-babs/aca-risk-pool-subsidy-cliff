@@ -206,8 +206,8 @@ footer a{color:var(--y25)}
     <div class="chartbox"><svg id="cliffchart" role="img"
       aria-label="Net annual premium against income, 2025 and 2026"></svg></div>
     <div class="key">
-      <span><i style="background:var(--y25)"></i>2025 &mdash; enhanced credits</span>
-      <span><i style="background:var(--y26)"></i>2026 &mdash; credits expired</span>
+      <span><i style="background:var(--y25)"></i>2025, enhanced credits</span>
+      <span><i style="background:var(--y26)"></i>2026, credits expired</span>
       <span><i style="background:var(--gap);height:11px;width:11px;border-radius:50%"></i>You</span>
     </div>
   </section>
@@ -240,8 +240,8 @@ footer a{color:var(--y25)}
       <summary>Read this before relying on a number</summary>
       <p>This calculator accompanies a working paper on what the expiry of the
         enhanced premium tax credits did to the individual-market risk pool. It
-        uses the <b>benchmark premium</b> &mdash; the second-lowest-cost silver
-        plan, which is what the tax credit is legally calculated against &mdash;
+        uses the <b>benchmark premium</b>, the second-lowest-cost silver
+        plan, which is what the tax credit is legally calculated against,
         taken from the CMS Exchange Rate and Plan Attributes public use files for
         plan years 2025 and 2026.</p>
       <p><b>It shows a state median.</b> Premiums are set by rating area, and
@@ -249,10 +249,11 @@ footer a{color:var(--y25)}
         it can. Your own plan may not be the benchmark plan, and most people do
         not buy the benchmark. Cost-sharing reductions, which also depend on
         income, are not modelled.</p>
-      <p><b>It covers the 31 states that use HealthCare.gov.</b> State-based
-        exchanges &mdash; California, New York, Colorado, Massachusetts and
-        others &mdash; file their own rates and are not in this data. Several of
-        them run their own subsidy programmes that cushion the change, so their
+      <p><b>It covers the states that use HealthCare.gov</b> (31 in 2025, 30 in
+        2026; Illinois moved to its own exchange for 2026 and shows 2025 rates
+        only). State-based exchanges such as California, New York, Colorado and
+        Massachusetts file their own rates and are not in this data. Several of
+        them run their own subsidy programs that cushion the change, so their
         absence matters.</p>
       <p><b>It is a single-person calculation.</b> A household's benchmark is
         built from each member's rate and its poverty threshold rises with
@@ -266,13 +267,14 @@ footer a{color:var(--y25)}
 </main>
 
 <footer class="wrap">
-  <p><b>Data.</b> CMS Health Insurance Exchange Public Use Files &mdash; Rate PUF
+  <p><b>Data.</b> CMS Health Insurance Exchange Public Use Files, Rate PUF
     and Plan Attributes PUF, plan years 2025 and 2026. Applicable-percentage
     schedules from the enhanced (ARPA/IRA) and original ACA rules; HHS poverty
     guidelines.</p>
   <p><b>Paper.</b> Babalola, O. D. (2026). <i>The Subsidy Cliff and the Risk
-    Pool: An Actuarial Model of Adverse Selection and Premium Stability in the
-    ACA Individual Market.</i> Working paper. Code and data:
+    Pool: An Actuarial Analysis of Adverse Selection and Premium Stability in
+    the ACA Individual Market after the Expiration of the Enhanced Premium Tax
+    Credits.</i> Working paper. Code and data:
     <a href="https://github.com/tosin-babs/aca-risk-pool-subsidy-cliff">github.com/tosin-babs/aca-risk-pool-subsidy-cliff</a></p>
   <p id="foot-gen"></p>
 </footer>
@@ -581,11 +583,11 @@ incEl.addEventListener("blur", e => {
 
 document.getElementById("status").innerHTML =
   `<b>Policy status, checked ${D.meta.policy_status_as_of}.</b> The enhanced `
-  + `premium tax credits expired on 31 December 2025. On 8 January 2026 the `
-  + `House passed a three-year extension by 230&ndash;196; the Senate had not `
-  + `acted, and a bipartisan bill restoring the credits for two years was `
-  + `reported to be in drafting. If Congress restores them, the 2026 figures `
-  + `here become a counterfactual rather than a description.`;
+  + `premium tax credits expired on 31 December 2025. Senate votes on 11 `
+  + `December 2025 fell short of 60; on 8 January 2026 the House passed a `
+  + `three-year extension, 230 to 196; no Senate passage had been found. If `
+  + `Congress restores them, the 2026 figures here become a counterfactual `
+  + `rather than a description.`;
 document.getElementById("foot-gen").textContent =
   `Built from ${D.meta.rating_areas} rating areas across ${D.meta.states} `
   + `states. Payload generated ${D.meta.generated}. Everything is computed in `

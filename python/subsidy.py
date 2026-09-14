@@ -10,7 +10,7 @@ level. Two things changed between 2025 and 2026 and they compound:
   * the applicable-percentage schedule reverted from the enhanced version to
     the original one, which contributes nothing below 150% FPL under the
     enhanced schedule but 2-4% under the original, caps at 8.5% under the
-    enhanced schedule but at 9.79% under the original, and - the change that
+    enhanced schedule but at 9.96% under the original, and - the change that
     dominates everything else - reinstates the cliff at 400% FPL, above which
     no credit is paid at all.
 
@@ -54,10 +54,31 @@ def applicable_pct(fpl_pct, year):
     return np.nan
 
 
-def income_at(fpl_pct, year, household_size=1):
-    fpl = (config.FPL_BASE[year]
-           + config.FPL_INCREMENT[year] * (household_size - 1))
-    return fpl * fpl_pct / 100.0
+def poverty_line(year, household_size=1, state=None):
+    """HHS guideline for the coverage year; Alaska and Hawaii have their own."""
+    base = config.FPL_BASE_STATE.get(state, config.FPL_BASE)[year]
+    inc = config.FPL_INCREMENT_STATE.get(state, config.FPL_INCREMENT)[year]
+    return base + inc * (household_size - 1)
+
+
+def income_at(fpl_pct, year, household_size=1, state=None):
+    return poverty_line(year, household_size, state) * fpl_pct / 100.0
+
+
+def net_payment(gross, fpl_pct, year, state=None, schedule=None):
+    """Vectorised annual payment for the benchmark after any credit.
+
+    gross and fpl_pct may be arrays. Where the schedule pays no credit
+    (applicable_pct is NaN) the household pays the gross premium. `schedule`
+    overrides the year's schedule with a callable fpl -> share (or NaN), which
+    is how the policy scenarios are priced on 2026 incomes.
+    """
+    gross = np.asarray(gross, float)
+    fpl = np.broadcast_to(np.asarray(fpl_pct, float), gross.shape)
+    rule = schedule or (lambda f: applicable_pct(f, year))
+    pct = np.array([rule(f) for f in fpl.ravel()], float).reshape(fpl.shape)
+    contribution = income_at(fpl, year, state=state) * pct
+    return np.where(np.isfinite(pct), np.minimum(gross, contribution), gross)
 
 
 def net_premium_table(bench):
