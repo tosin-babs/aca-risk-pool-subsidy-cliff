@@ -4,7 +4,7 @@
 
 ¹ Department of Actuarial Science and Quantitative Risk Analysis and Management, Georgia State University, Atlanta, GA, USA. obabalola4@student.gsu.edu
 
-**Word count.** About 5,200 excluding abstract, tables and references. **Figures.** 7. **Tables.** 9 in text, 11 in appendix.
+**Word count.** About 5,200 excluding abstract, tables and references.
 
 ---
 
