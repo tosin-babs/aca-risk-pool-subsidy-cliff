@@ -180,8 +180,6 @@ The expiration of the enhanced premium tax credits did not produce a premium spi
 
 **Ethics.** The analysis uses public administrative files and de-identified survey data and did not require ethical approval.
 
-**AI-assistance disclosure.** Generative AI (Claude, Anthropic) was used to assist with code development, code review and language editing. The author designed the study, specified all models and parameters, verified and interpreted all results, and takes full responsibility for the content. AI systems are not authors.
-
 **CRediT statement.** **Oluwatosin Dorcas Babalola**: conceptualization, methodology, software, formal analysis, data curation, writing (original draft), writing (review and editing).
 
 ---
