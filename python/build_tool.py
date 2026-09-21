@@ -37,7 +37,7 @@ HEAD = """<!doctype html>
 of the enhanced ACA premium tax credits did to the net benchmark premium, by age, \
 state and income, built on the CMS Rate and Plan Attributes public use files for \
 2025 and 2026.">
-<meta name="author" content="Oluwatosin Dorcas Babalola">
+<meta name="author" content="Oluwatosin Dorcas Babalola, Oluwakemi Oyinlade, Daniel Ekow Arthur">
 <meta property="og:title" content="The Subsidy Cliff">
 <meta property="og:description" content="What the expiry of the enhanced premium \
 tax credits did to your ACA premium, and what crossing 400% of poverty costs.">

@@ -1,8 +1,10 @@
 # The Subsidy Cliff and the Risk Pool: An Actuarial Analysis of Adverse Selection and Premium Stability in the ACA Individual Market after the Expiration of the Enhanced Premium Tax Credits
 
-**Oluwatosin Dorcas Babalola**¹ *(corresponding author)*
+**Oluwatosin Dorcas Babalola**¹ *(corresponding author)*, **Oluwakemi Oyinlade**¹, **Daniel Ekow Arthur**²
 
 ¹ Department of Actuarial Science and Quantitative Risk Analysis and Management, Georgia State University, Atlanta, GA, USA. obabalola4@student.gsu.edu
+
+² Maurice R. Greenberg School of Risk Science, J. Mack Robinson College of Business, Georgia State University, Atlanta, GA, USA.
 
 **Word count.** 5,180 excluding abstract, tables and references.
 
@@ -180,7 +182,7 @@ The expiration of the enhanced premium tax credits did not produce a premium spi
 
 **Ethics.** The analysis uses public administrative files and de-identified survey data and did not require ethical approval.
 
-**CRediT statement.** **Oluwatosin Dorcas Babalola**: conceptualization, methodology, software, formal analysis, data curation, writing (original draft), writing (review and editing).
+**CRediT statement.** **Oluwatosin Dorcas Babalola**: conceptualization, methodology, software, formal analysis, data curation, writing (original draft), writing (review and editing). **Oluwakemi Oyinlade**: roles to be confirmed by the authors. **Daniel Ekow Arthur**: roles to be confirmed by the authors.
 
 ---
 

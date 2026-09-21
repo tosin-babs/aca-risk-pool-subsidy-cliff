@@ -117,9 +117,11 @@ python3 -m venv .venv
 for the enrollment files; `python/did.py` holds the placebo, difference in
 differences and reinsurance tests.
 
-## Author
+## Authors
 
-Oluwatosin Dorcas Babalola, Georgia State University, obabalola4@student.gsu.edu
+- Oluwatosin Dorcas Babalola, Department of Actuarial Science and Quantitative Risk Analysis and Management, Georgia State University, Atlanta, GA, USA, obabalola4@student.gsu.edu (corresponding)
+- Oluwakemi Oyinlade, Department of Actuarial Science and Quantitative Risk Analysis and Management, Georgia State University, Atlanta, GA, USA
+- Daniel Ekow Arthur, Maurice R. Greenberg School of Risk Science, J. Mack Robinson College of Business, Georgia State University, Atlanta, GA, USA
 
 ## License
 
