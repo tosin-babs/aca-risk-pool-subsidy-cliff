@@ -40,7 +40,7 @@ The main finding concerns the structure of the response. A standard selection mo
 
 **The change.** The 2025 schedule required nothing below 150% of poverty, rising to 8.5% of income at 400% and capped at 8.5% with no upper limit. The 2026 schedule is the original law as indexed by Rev. Proc. 2025-25 (Internal Revenue Service, 2025): 2.10% of income below 133% of poverty, rising through 4.19% at 150%, 6.60% at 200% and 8.44% at 250%, to 9.96% from 300% to 400%, and no credit above 400%. Coverage in 2025 used the 2024 poverty guidelines ($15,060 for one person in the contiguous states) and coverage in 2026 the 2025 guidelines ($15,650); Alaska and Hawaii have their own. All calculations are for single adults.
 
-**Legislative status.** Checked on 14 September 2026. The Senate voted on competing extension proposals on 11 December 2025 and neither reached 60 votes. On 8 January 2026 the House passed a three-year extension by 230 to 196. No Senate passage was found as of the date above; a bipartisan Senate bill restoring the credits for two years with minimum payments and income caps had been reported as near completion in January (Association of State and Territorial Health Officials, 2026). A later restoration would not reprice 2026 but would change what the counterfactuals in Section 6.6 represent.
+**Legislative status.** The Senate voted on competing extension proposals on 11 December 2025 and neither reached 60 votes, so the enhanced credits expired on schedule and 2026 coverage was priced and sold without them. A later restoration would not reprice 2026 but would change what the counterfactuals in Section 6.6 represent.
 
 ## 3. Related literature
 
@@ -148,7 +148,7 @@ Restoring the enhanced schedule for 2026 in the 30 HealthCare.gov states would c
 
 Table 9b prices the alternatives. Extending the enhanced schedule only to 600% of poverty saves 5% of the outlay and forgoes 13% of the coverage. Restoring it only below 400% costs $18.9 billion nationally for 319,000 person-years, $59,059 each, because it spends nothing where the response was largest. Leaving the 2026 schedule in place and extending its 9.96% cap above 400%, which removes the notch and nothing else, costs $3.3 billion for 338,000 person-years, $9,636 each, or $16,672 net of bunching. Under the proportional-recovery assumption that is the cheapest coverage on the menu; it is also the schedule whose recovery assumption is least tested, since no year has combined the original contribution rates with an uncapped credit.
 
-The Congressional Budget Office, as reported by the Congressional Research Service (2026), estimated that permanent extension would add $350 billion to deficits over 2026 to 2035 and raise the insured population by 3.8 million in 2035, about $9,211 per person insured at the end of the window. The full-restoration average here is more than three times that. The two measure different things: a decade-long equilibrium that includes people who never entered the marketplace, against the first-year reversal of one observed change, dampened by the inertia Handel (2013) documents. The gap does not close in the convenient direction, since netting out bunching raises the estimate here.
+The Congressional Budget Office (2025) estimated that permanent extension would add $350 billion to deficits over 2026 to 2035 and raise the insured population by 3.8 million in 2035, about $9,211 per person insured at the end of the window. The full-restoration average here is more than three times that. The two measure different things: a decade-long equilibrium that includes people who never entered the marketplace, against the first-year reversal of one observed change, dampened by the inertia Handel (2013) documents. The gap does not close in the convenient direction, since netting out bunching raises the estimate here.
 
 ## 7. Discussion
 
@@ -182,7 +182,6 @@ The expiration of the enhanced premium tax credits did not produce a premium spi
 
 **Ethics.** The analysis uses public administrative files and de-identified survey data and did not require ethical approval.
 
-**CRediT statement.** **Oluwatosin Dorcas Babalola**: conceptualization, methodology, software, formal analysis, data curation, writing (original draft), writing (review and editing). **Oluwakemi Oyinlade**: roles to be confirmed by the authors. **Daniel Ekow Arthur**: roles to be confirmed by the authors.
 
 ---
 
@@ -203,14 +202,13 @@ The expiration of the enhanced premium tax credits did not produce a premium spi
 13. Saez, E. (2010). Do taxpayers bunch at kink points? *American Economic Journal: Economic Policy*, 2(3), 180–212. doi:10.1257/pol.2.3.180
 14. Saltzman, E. (2019). Demand for health insurance: evidence from the California and Washington ACA exchanges. *Journal of Health Economics*, 63, 197–222. doi:10.1016/j.jhealeco.2018.11.004
 15. Smyth, G. K., & Jørgensen, B. (2002). Fitting Tweedie's compound Poisson model to insurance claims data: dispersion modelling. *ASTIN Bulletin*, 32(1), 143–157. doi:10.2143/AST.32.1.1020
-16. Centers for Medicare & Medicaid Services (2025, 2026). *Health Insurance Exchange Public Use Files: Rate and Plan Attributes*, plan years 2025 and 2026. Accessed September 2026.
+16. Centers for Medicare & Medicaid Services (2024, 2025). *Health Insurance Exchange Public Use Files: Rate and Plan Attributes*, plan years 2025 and 2026. Accessed September 2026.
 17. Centers for Medicare & Medicaid Services (2024–2026). *Marketplace Open Enrollment Period Public Use Files, State-Level and County-Level*, 2024, 2025 and 2026, and *Health Insurance Exchanges 2026 Open Enrollment Report*. Accessed September 2026.
 18. Centers for Medicare & Medicaid Services (2022–2025). *Medical Loss Ratio Public Use Files*, reporting years 2021–2024. Accessed September 2026.
-19. Centers for Medicare & Medicaid Services (2022, 2026). *Data Brief on Section 1332 Waivers: State-Based Reinsurance Programs* (December 2022) and *Section 1332: State Innovation Waivers* (web page). Accessed 14 September 2026.
+19. Centers for Medicare & Medicaid Services (2022, n.d.). *Data Brief on Section 1332 Waivers: State-Based Reinsurance Programs* (December 2022) and *Section 1332: State Innovation Waivers* (web page). Accessed 14 September 2026.
 20. Agency for Healthcare Research and Quality. *Medical Expenditure Panel Survey Full-Year Consolidated Files*, 2019–2024. Accessed September 2026.
 21. Internal Revenue Service (2025). *Revenue Procedure 2025-25: Applicable Percentage Table and Required Contribution Percentage for 2026*. Washington, DC.
 22. Office of the Assistant Secretary for Planning and Evaluation (2024, 2025). *HHS Poverty Guidelines*. Washington, DC: U.S. Department of Health and Human Services.
-23. Congressional Research Service (2026). *Enhanced Premium Tax Credit and 2026 Exchange Premiums: Frequently Asked Questions*. Report R48290. Accessed 14 September 2026.
-24. Association of State and Territorial Health Officials (2026). *ACA Enhanced Premium Tax Credits: Legislative Developments in 2025 and 2026*. 20 January 2026. Accessed 14 September 2026.
+23. Congressional Budget Office (2025). *The Estimated Effects of Enacting Selected Health Coverage Policies on the Federal Budget and on the Number of People With Health Insurance*. September 2025. https://www.cbo.gov/publication/61734
 
 *DOIs for references 1 to 15 were verified against the Crossref REST API on 14 September 2026.*

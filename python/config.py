@@ -209,7 +209,7 @@ POLICY_CONTROL_BAND = "FPL_100_150"
 #   cliff_only  the 2026 schedule, with its 9.96% cap extended above 400%
 #   capped      the enhanced schedule up to a ceiling, no credit above it
 POLICY_PARTIAL_CEILING = 600
-CBO_DEFICIT_2026_2035 = 350e9         # CRS R48290, permanent extension
+CBO_DEFICIT_2026_2035 = 350e9         # CBO (2025), publication 61734, permanent extension
 CBO_INSURED_2035 = 3.8e6
 
 # ------------------------------------------------------------ loss ratio ----
