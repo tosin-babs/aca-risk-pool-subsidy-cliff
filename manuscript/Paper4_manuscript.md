@@ -202,13 +202,13 @@ The expiration of the enhanced premium tax credits did not produce a premium spi
 13. Saez, E. (2010). Do taxpayers bunch at kink points? *American Economic Journal: Economic Policy*, 2(3), 180–212. doi:10.1257/pol.2.3.180
 14. Saltzman, E. (2019). Demand for health insurance: evidence from the California and Washington ACA exchanges. *Journal of Health Economics*, 63, 197–222. doi:10.1016/j.jhealeco.2018.11.004
 15. Smyth, G. K., & Jørgensen, B. (2002). Fitting Tweedie's compound Poisson model to insurance claims data: dispersion modelling. *ASTIN Bulletin*, 32(1), 143–157. doi:10.2143/AST.32.1.1020
-16. Centers for Medicare & Medicaid Services (2024, 2025). *Health Insurance Exchange Public Use Files: Rate and Plan Attributes*, plan years 2025 and 2026. Accessed September 2026.
-17. Centers for Medicare & Medicaid Services (2024–2026). *Marketplace Open Enrollment Period Public Use Files, State-Level and County-Level*, 2024, 2025 and 2026, and *Health Insurance Exchanges 2026 Open Enrollment Report*. Accessed September 2026.
-18. Centers for Medicare & Medicaid Services (2022–2025). *Medical Loss Ratio Public Use Files*, reporting years 2021–2024. Accessed September 2026.
-19. Centers for Medicare & Medicaid Services (2022, n.d.). *Data Brief on Section 1332 Waivers: State-Based Reinsurance Programs* (December 2022) and *Section 1332: State Innovation Waivers* (web page). Accessed 14 September 2026.
-20. Agency for Healthcare Research and Quality. *Medical Expenditure Panel Survey Full-Year Consolidated Files*, 2019–2024. Accessed September 2026.
+16. Centers for Medicare & Medicaid Services (2024, 2025). *Health Insurance Exchange Public Use Files: Rate and Plan Attributes*, plan years 2025 and 2026.
+17. Centers for Medicare & Medicaid Services (2024–2026). *Marketplace Open Enrollment Period Public Use Files, State-Level and County-Level*, 2024, 2025 and 2026, and *Health Insurance Exchanges 2026 Open Enrollment Report*.
+18. Centers for Medicare & Medicaid Services (2022–2025). *Medical Loss Ratio Public Use Files*, reporting years 2021–2024.
+19. Centers for Medicare & Medicaid Services (2022, n.d.). *Data Brief on Section 1332 Waivers: State-Based Reinsurance Programs* (December 2022) and *Section 1332: State Innovation Waivers* (web page).
+20. Agency for Healthcare Research and Quality. *Medical Expenditure Panel Survey Full-Year Consolidated Files*, 2019–2024.
 21. Internal Revenue Service (2025). *Revenue Procedure 2025-25: Applicable Percentage Table and Required Contribution Percentage for 2026*. Washington, DC.
 22. Office of the Assistant Secretary for Planning and Evaluation (2024, 2025). *HHS Poverty Guidelines*. Washington, DC: U.S. Department of Health and Human Services.
 23. Congressional Budget Office (2025). *The Estimated Effects of Enacting Selected Health Coverage Policies on the Federal Budget and on the Number of People With Health Insurance*. September 2025. https://www.cbo.gov/publication/61734
 
-*DOIs for references 1 to 15 were verified against the Crossref REST API on 14 September 2026.*
+*DOIs for references 1 to 15 were verified against the Crossref REST API.*
