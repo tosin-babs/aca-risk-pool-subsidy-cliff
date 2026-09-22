@@ -120,8 +120,8 @@ differences and reinsurance tests.
 ## Authors
 
 - Oluwatosin Dorcas Babalola, Department of Actuarial Science and Quantitative Risk Analysis and Management, Georgia State University, Atlanta, GA, USA, obabalola4@student.gsu.edu (corresponding)
-- Oluwakemi Oyinlade, Department of Actuarial Science and Quantitative Risk Analysis and Management, Georgia State University, Atlanta, GA, USA
-- Daniel Ekow Arthur, Maurice R. Greenberg School of Risk Science, J. Mack Robinson College of Business, Georgia State University, Atlanta, GA, USA
+- Oluwakemi Oyinlade, Department of Actuarial Science and Quantitative Risk Analysis and Management, Georgia State University, Atlanta, GA, USA, kemisola.oyinlade@gmail.com
+- Daniel Ekow Arthur, Department of Statistics, Kwame Nkrumah University of Science and Technology (KNUST), Kumasi, Ghana, arthurdaniel129.da@gmail.com
 
 ## License
 
