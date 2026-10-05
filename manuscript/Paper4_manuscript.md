@@ -2,11 +2,13 @@
 
 **Oluwatosin Dorcas Babalola**¹ *(corresponding author)*, **Oluwakemi Oyinlade**¹, **Daniel Ekow Arthur**²
 
-¹ Department of Actuarial Science and Quantitative Risk Analysis and Management, Georgia State University, Atlanta, GA, USA.
+¹ Maurice R. Greenberg School of Risk Science, J. Mack Robinson College of Business, Georgia State University, Atlanta, GA, USA.
 
-² Department of Statistics, Kwame Nkrumah University of Science and Technology (KNUST), Kumasi, Ghana.
+² Independent researcher.
 
 **Email.** Oluwatosin Dorcas Babalola: obabalola4@student.gsu.edu; Oluwakemi Oyinlade: kemisola.oyinlade@gmail.com; Daniel Ekow Arthur: arthurdaniel129.da@gmail.com.
+
+**Date.** August 2026.
 
 **Word count.** 5,180 excluding abstract, tables and references.
 
