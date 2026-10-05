@@ -8,7 +8,7 @@
 
 **Email.** Oluwatosin Dorcas Babalola: obabalola4@student.gsu.edu; Oluwakemi Oyinlade: kemisola.oyinlade@gmail.com; Daniel Ekow Arthur: arthurdaniel129.da@gmail.com.
 
-**Date.** August 2026.
+**Date.** October 2026.
 
 **Word count.** 5,180 excluding abstract, tables and references.
 
