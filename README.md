@@ -121,7 +121,7 @@ differences and reinsurance tests.
 
 - Oluwatosin Dorcas Babalola, Maurice R. Greenberg School of Risk Science, J. Mack Robinson College of Business, Georgia State University, Atlanta, GA, USA, obabalola4@student.gsu.edu (corresponding)
 - Oluwakemi Oyinlade, Maurice R. Greenberg School of Risk Science, J. Mack Robinson College of Business, Georgia State University, Atlanta, GA, USA, kemisola.oyinlade@gmail.com
-- Daniel Ekow Arthur, Independent researcher, arthurdaniel129.da@gmail.com
+- Daniel Ekow Arthur, Maurice R. Greenberg School of Risk Science, J. Mack Robinson College of Business, Georgia State University, Atlanta, GA, USA, arthurdaniel129.da@gmail.com
 
 ## License
 

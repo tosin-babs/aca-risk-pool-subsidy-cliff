@@ -1,10 +1,8 @@
 # The Subsidy Cliff and the Risk Pool: An Actuarial Analysis of Adverse Selection and Premium Stability in the ACA Individual Market after the Expiration of the Enhanced Premium Tax Credits
 
-**Oluwatosin Dorcas Babalola**¹ *(corresponding author)*, **Oluwakemi Oyinlade**¹, **Daniel Ekow Arthur**²
+**Oluwatosin Dorcas Babalola**¹ *(corresponding author)*, **Oluwakemi Oyinlade**¹, **Daniel Ekow Arthur**¹
 
 ¹ Maurice R. Greenberg School of Risk Science, J. Mack Robinson College of Business, Georgia State University, Atlanta, GA, USA.
-
-² Independent researcher.
 
 **Email.** Oluwatosin Dorcas Babalola: obabalola4@student.gsu.edu; Oluwakemi Oyinlade: kemisola.oyinlade@gmail.com; Daniel Ekow Arthur: arthurdaniel129.da@gmail.com.
 
